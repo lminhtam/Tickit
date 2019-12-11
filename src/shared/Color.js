@@ -1,4 +1,4 @@
-export const Color = {
+export default {
   primaryColor: '#AC73E4',
   inactiveColor: '#AC73E4',
   startGradient: '#69BDFE',
