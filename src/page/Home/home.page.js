@@ -20,6 +20,7 @@ import {
   Right,
   Segment,
 } from 'native-base';
+import Carousel from 'react-native-snap-carousel';
 import Color from '../../shared/Color.js';
 
 const show = [
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
   },
   titleTextStyle: {
     color: Color.primaryColor,
-    fontFamily: 'Cabin-Regular',
+    fontFamily: 'Cabin-SemiBold',
     fontSize: 20,
     margin: 16,
   },
@@ -178,5 +179,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: 16,
     alignItems: 'center',
+    elevation: 4,
+    shadowOffset: {width: 5, height: 5},
+    shadowColor: 'grey',
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
   },
 });
