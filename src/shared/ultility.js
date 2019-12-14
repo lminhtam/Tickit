@@ -15,6 +15,20 @@ export const DESIGN_WIDTH = 375;
 export const DESIGN_HEIGHT = 667;
 export const ratioW = SCREEN_WIDTH / DESIGN_WIDTH;
 export const ratioH = SCREEN_HEIGHT / DESIGN_HEIGHT;
+export const {width: viewportWidth, height: viewportHeight} = Dimensions.get(
+  'window',
+);
+
+function wp (percentage) {
+  const value = (percentage * viewportWidth) / 100;
+  return Math.round(value);
+}
+
+const slideWidth = wp(75);
+const itemHorizontalMargin = wp(2);
+
+export const sliderWidth = viewportWidth;
+export const itemWidth = slideWidth + itemHorizontalMargin * 2;
 
 export const isIOSDevices = () => {
   if (Platform.OS === 'ios') {
