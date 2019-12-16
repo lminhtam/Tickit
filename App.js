@@ -6,14 +6,6 @@
 //  * @flow
 //  */
 
-// import {createAppContainer, createSwitchNavigator} from 'react-navigation';
-// // import HomePage from './src/page/Home/home.page';
-// import { AppNavigator }
-
-// const AppSwitch = createSwitchNavigator({
-//   Main: MainTabNavigator,
-// });
-
 // const App = createAppContainer(AppSwitch);
 
 // export default App;
