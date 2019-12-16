@@ -17,14 +17,17 @@ import {
 } from 'react-native';
 
 import {createSwitchNavigator, createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
 import HomePage from './src/page/Home/home.page';
+import DetailPage from './src/page/Detail/detail.page';
 
-const AppSwitch = createSwitchNavigator(
+const AppSwitch = createStackNavigator(
   {
     Home: HomePage,
+    Detail: DetailPage,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Detail',
   },
 );
 
