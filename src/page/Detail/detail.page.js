@@ -52,7 +52,7 @@ export default class DetailPage extends React.Component {
 
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={styles.container}>
         <CustomHeader
           title="Chi tiết"
           isLeftBtnVisible={true}
@@ -67,7 +67,7 @@ export default class DetailPage extends React.Component {
             <View style={styles.nameContainer}>
               <Text style={styles.showName}>Music Laser Show</Text>
               <StarRating
-                disabled={false}
+                disabled={true}
                 maxStars={5}
                 rating={4}
                 fullStarColor={Color.starColor}
@@ -75,7 +75,6 @@ export default class DetailPage extends React.Component {
                 starSize={18}
                 containerStyle={styles.nameContainer}
                 starStyle={{paddingRight: 5}}
-                // selectedStar={rating => this.onStarRatingPress(rating)}
               />
             </View>
             <View style={styles.fromContainer}>
@@ -129,6 +128,9 @@ const styles = StyleSheet.create({
   mainViewStyle: {
     backgroundColor: 'white',
   },
+  container: {
+    marginBottom: 60,
+  },
   fromContainer: {
     alignItems: 'center',
     flex: 1,
@@ -161,11 +163,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     justifyContent: 'space-between',
     alignItems: 'center',
-    elevation: 4,
-    shadowOffset: {width: 5, height: 5},
-    shadowColor: 'grey',
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
   },

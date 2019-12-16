@@ -6,14 +6,19 @@ import {createBottomTabNavigator} from 'react-navigation-tabs';
 import HomePage from '../page/Home/home.page';
 import SearchPage from '../page/Search/search.page';
 import LoginPage from '../page/Login/login.page';
+import DetailPage from '../page/Detail/detail.page';
+import BookingPage from '../page/Booking/booking.page';
 import Color from './Color';
 
 const HomeStack = createStackNavigator(
   {
     Home: HomePage,
+    Detail: DetailPage,
+    Booking: BookingPage,
   },
   {
     headerMode: 'none',
+    initialRouteName: 'Booking',
     navigationOptions: {
       tabBarIcon: ({tintColor}) => (
         <Icon name="home" type="entypo" size={20} color={tintColor} />
