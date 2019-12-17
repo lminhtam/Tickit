@@ -3,10 +3,10 @@ import {Body, Header, Left, Right, Title, Button, Text, Row} from 'native-base';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color.js';
-import LoginForm from './components/login.form.js';
+import SignUpForm from './components/signUp.form.js';
 import {Image, TouchableOpacity} from 'react-native';
 
-export default class LoginPage extends React.Component {
+export default class SignUpPage extends React.Component {
   static navigationOptions = {
     header: <View />,
   };
@@ -26,38 +26,35 @@ export default class LoginPage extends React.Component {
             style={{backgroundColor: 'white'}}>
             <Left style={{flex: 0.2}} />
             <Body style={{flex: 0.6, alignItems: 'center'}}>
-              <Title style={styles.headerText}>Đăng nhập</Title>
+              <Title style={styles.headerText}>Đăng ký</Title>
             </Body>
             <Right style={{flex: 0.2}} />
           </Header>
         </View>
         <ScrollView style={styles.mainViewStyle}>
-          <LoginForm />
+          <SignUpForm />
           <View style={styles.bottomWrap}>
-            <TouchableOpacity>
-              <Text style={styles.bottomTxt}>Quên mật khẩu?</Text>
-            </TouchableOpacity>
             <View style={{flexDirection: 'row'}}>
-              <Text style={styles.bottomTxt}>Chưa có tài khoản?</Text>
+              <Text style={styles.bottomTxt}>Đã có tài khoản?</Text>
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('SignUp')}>
+                onPress={() => this.props.navigation.navigate('Login')}>
                 <Text
                   style={[
                     styles.bottomTxt,
                     {color: 'red', fontWeight: '600', marginLeft: 5},
                   ]}>
-                  Đăng ký
+                  Đăng nhập
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
           <Button style={styles.btnStyle}>
             <Text uppercase={false} style={styles.btnText}>
-              Đăng nhập
+              Đăng ký
             </Text>
           </Button>
           <View style={styles.addButton}>
-            <Text style={styles.bottomTxt}>Đăng nhập bằng</Text>
+            <Text style={styles.bottomTxt}>Đăng ký với</Text>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <TouchableOpacity>
@@ -102,14 +99,14 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 50,
+    marginVertical: 30,
     marginHorizontal: 16,
   },
   bottomWrap: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     margin: 16,
   },
   bottomTxt: {
