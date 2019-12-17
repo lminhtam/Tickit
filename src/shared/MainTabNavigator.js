@@ -9,6 +9,7 @@ import LoginPage from '../page/Login/login.page';
 import DetailPage from '../page/Detail/detail.page';
 import BookingPage from '../page/Booking/booking.page';
 import Color from './Color';
+import SignUpPage from '../page/SignUp/signUp.page';
 
 const HomeStack = createStackNavigator(
   {
@@ -44,6 +45,7 @@ const SearchStack = createStackNavigator(
 const ProfileStack = createStackNavigator(
   {
     Login: LoginPage,
+    SignUp: SignUpPage,
   },
   {
     headerMode: 'float',
