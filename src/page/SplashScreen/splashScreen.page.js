@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
 import Color from '../../shared/Color';
 
 export default class SplashScreen extends Component {
@@ -17,14 +17,11 @@ export default class SplashScreen extends Component {
   render() {
     const viewStyles = [
       styles.container,
-      styles.textStyles,
       {backgroundColor: Color.primaryColor},
     ];
     return (
       <View style={viewStyles}>
-        <Text style={{fontFamily: 'BDPBIRGULA', fontSize: 50, color: 'white'}}>
-          TICKET
-        </Text>
+        <Image source={require('../../assets/img/logo.png')} resizeMode='contain' style={{ width: 100}}/>
       </View>
     );
   }
