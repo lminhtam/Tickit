@@ -21,32 +21,32 @@ export default class BookingPage extends React.Component {
     email: yup
       .string()
       .label('Email')
-      .email('Email hiện tại không đúng')
+      .email('Email hiện tại không hợp lệ')
       .required('* Vui lòng nhập email'),
     phoneNumber: yup
       .string()
       .required('* Vui lòng nhập số điện thoại')
-      .matches(/(09|01[2|6|8|9])+([0-9]{8})\b/, {
-        message: 'Số điện thoại không đúng',
+      .matches(/((09|03|07|08|05)+([0-9]{8})\b)/g, {
+        message: 'Số điện thoại không hợp lệ',
       }),
     fullname: yup
       .string()
       .required('* Vui lòng nhập họ và tên')
       .matches(
-        /^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\\s]+$/,
+        /[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/u,
         {
-          message: 'Họ tên không đúng',
+          message: 'Họ tên không hợp lệ',
         },
       ),
-      id: yup
+    id: yup
       .string()
       .required('* Vui lòng nhập CMND/CCCD')
-      .matches(/([0-9]{9})\b/ , {
-        message: 'CMND không đúng',
+      .matches(/([0-9]{9})\b/, {
+        message: 'CMND không hợp lệ',
       })
-      .matches(/([0-9]{12})\b/,{
-        message: 'Căn cước công dân không đúng',
-      })
+      .matches(/([0-9]{12})\b/, {
+        message: 'Căn cước công dân không hợp lệ',
+      }),
   });
 
   render() {
@@ -73,63 +73,72 @@ export default class BookingPage extends React.Component {
               errors,
               touched,
               setFieldTouched,
-            }) => (
-              <View>
-                <Input
-                  style={styles.infoItem}
-                  placeholder="Họ và tên"
-                  onTouchStart={() => setFieldTouched('fullname')}
-                  onChangeText={handleChange('fullname')}
-                  onBlur={handleBlur('fullname')}
-                  value={values.fullname}
-                />
-                {touched.fullname && errors.fullname && (
-                  <Text style={styles.errorText}>{errors.fullname}</Text>
-                )}
-                <Input
-                  style={styles.infoItem}
-                  placeholder="Số điện thoại"
-                  onTouchStart={() => setFieldTouched('phoneNumber')}
-                  onChangeText={handleChange('phoneNumber')}
-                  onBlur={handleBlur('phoneNumber')}
-                  value={values.phoneNumber}
-                />
-                {touched.phoneNumber && errors.phoneNumber && (
-                  <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-                )}
-                <Input
-                  style={styles.infoItem}
-                  placeholder="Email"
-                  onTouchStart={() => setFieldTouched('email')}
-                  onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
-                  value={values.email}
-                />
-                {touched.email && errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-                <Input
-                  style={styles.infoItem}
-                  placeholder="CMND"
-                  onTouchStart={() => setFieldTouched('id')}
-                  onChangeText={handleChange('id')}
-                  onBlur={handleBlur('id')}
-                  value={values.id}
-                />
-                {touched.id && errors.id && (
-                  <Text style={styles.errorText}>{errors.id}</Text>
-                )}
-                <Button
-                  rounded
-                  disabled={!isValid}
-                  style={styles.bookBtn}
-                  onPress={handleSubmit}>
-                  <Text uppercase={false} style={styles.bookText}>
-                    Tiếp tục
-                  </Text>
-                </Button>
-              </View>
-            )}
+            }) => {
+              return (
+                <View>
+                  <Input
+                    style={styles.infoItem}
+                    placeholder="Họ và tên"
+                    onTouchStart={() => setFieldTouched('fullname')}
+                    onChangeText={handleChange('fullname')}
+                    onBlur={handleBlur('fullname')}
+                    value={values.fullname}
+                  />
+                  {touched.fullname && errors.fullname && (
+                    <Text style={styles.errorText}>{errors.fullname}</Text>
+                  )}
+                  <Input
+                    style={styles.infoItem}
+                    placeholder="Số điện thoại"
+                    onTouchStart={() => setFieldTouched('phoneNumber')}
+                    onChangeText={handleChange('phoneNumber')}
+                    onBlur={handleBlur('phoneNumber')}
+                    value={values.phoneNumber}
+                  />
+                  {touched.phoneNumber && errors.phoneNumber && (
+                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                  )}
+                  <Input
+                    style={styles.infoItem}
+                    placeholder="Email"
+                    onTouchStart={() => setFieldTouched('email')}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                  />
+                  {touched.email && errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
+                  <Input
+                    style={styles.infoItem}
+                    placeholder="CMND"
+                    onTouchStart={() => setFieldTouched('id')}
+                    onChangeText={handleChange('id')}
+                    onBlur={handleBlur('id')}
+                    value={values.id}
+                  />
+                  {touched.id && errors.id && (
+                    <Text style={styles.errorText}>{errors.id}</Text>
+                  )}
+                  <Button
+                    rounded
+                    disabled={!isValid}
+                    style={[
+                      styles.bookBtn,
+                      {
+                        backgroundColor: isValid
+                          ? Color.primaryColor
+                          : Color.gray,
+                      },
+                    ]}
+                    onPress={handleSubmit}>
+                    <Text uppercase={false} style={styles.bookText}>
+                      Tiếp tục
+                    </Text>
+                  </Button>
+                </View>
+              );
+            }}
           </Formik>
         </ScrollView>
       </SafeAreaView>
@@ -164,7 +173,6 @@ const styles = StyleSheet.create({
   },
   bookBtn: {
     margin: 16,
-    backgroundColor: Color.primaryColor,
     justifyContent: 'center',
   },
   bookText: {

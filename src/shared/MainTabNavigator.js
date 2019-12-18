@@ -10,16 +10,20 @@ import DetailPage from '../page/Detail/detail.page';
 import BookingPage from '../page/Booking/booking.page';
 import Color from './Color';
 import SignUpPage from '../page/SignUp/signUp.page';
+import TicketInformation from '../page/TicketInformation/ticketInformation.page';
+import TicketDetailPage from '../page/TicketDetail/ticketDetail.page';
 
 const HomeStack = createStackNavigator(
   {
     Home: HomePage,
     Detail: DetailPage,
     Booking: BookingPage,
+    TicketInfo: TicketInformation,
+    TicketDetail: TicketDetailPage,
   },
   {
     headerMode: 'none',
-    initialRouteName: 'Booking',
+    initialRouteName: 'TicketDetail',
     navigationOptions: {
       tabBarIcon: ({tintColor}) => (
         <Icon name="home" type="entypo" size={20} color={tintColor} />
