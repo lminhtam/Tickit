@@ -82,7 +82,9 @@ export default class BookedTicketPage extends React.Component {
           rounded
           bordered
           style={styles.btnStyle}
-          onPress={() => this.props.navigation.navigate('DetailTicket')}>
+          onPress={() =>
+            this.props.navigation.navigate('DetailTicket', {used: 'profile'})
+          }>
           <Text uppercase={false} style={styles.noStyle}>
             Xem chi tiết
           </Text>

@@ -71,7 +71,9 @@ export default class TicketInformationPage extends React.Component {
           <Button
             rounded
             style={styles.bookBtn}
-            onPress={() => this.props.navigation.navigate('TicketDetail')}>
+            onPress={() =>
+              this.props.navigation.navigate('TicketDetail', {used: 'home'})
+            }>
             <Text style={styles.bookText} uppercase={false}>
               Thanh toán
             </Text>

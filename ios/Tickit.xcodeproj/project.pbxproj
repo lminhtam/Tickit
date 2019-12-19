@@ -49,6 +49,7 @@
 		46C8085185AC4AE7895E9DB0 /* music-laser.png in Resources */ = {isa = PBXBuildFile; fileRef = 94E46F0E1B194D1A84BA6944 /* music-laser.png */; };
 		7B5D7DE82A8D476FA6FDAF9D /* qrcode.png in Resources */ = {isa = PBXBuildFile; fileRef = 919EFD018C3A45EB97B2EB20 /* qrcode.png */; };
 		A648A379367E4BF1984D6CF5 /* talent-show-poster.png in Resources */ = {isa = PBXBuildFile; fileRef = 732C5F6CBF224ABBBB490709 /* talent-show-poster.png */; };
+		984C681D3FA64B5B9E0AE081 /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = E59902A018D14550B69D2F37 /* avatar.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +119,7 @@
 		94E46F0E1B194D1A84BA6944 /* music-laser.png */ = {isa = PBXFileReference; name = "music-laser.png"; path = "../src/assets/img/music-laser.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		919EFD018C3A45EB97B2EB20 /* qrcode.png */ = {isa = PBXFileReference; name = "qrcode.png"; path = "../src/assets/img/qrcode.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		732C5F6CBF224ABBBB490709 /* talent-show-poster.png */ = {isa = PBXFileReference; name = "talent-show-poster.png"; path = "../src/assets/img/talent-show-poster.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E59902A018D14550B69D2F37 /* avatar.png */ = {isa = PBXFileReference; name = "avatar.png"; path = "../src/assets/img/avatar.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -262,6 +264,7 @@
 				94E46F0E1B194D1A84BA6944 /* music-laser.png */,
 				919EFD018C3A45EB97B2EB20 /* qrcode.png */,
 				732C5F6CBF224ABBBB490709 /* talent-show-poster.png */,
+				E59902A018D14550B69D2F37 /* avatar.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -437,6 +440,7 @@
 				46C8085185AC4AE7895E9DB0 /* music-laser.png in Resources */,
 				7B5D7DE82A8D476FA6FDAF9D /* qrcode.png in Resources */,
 				A648A379367E4BF1984D6CF5 /* talent-show-poster.png in Resources */,
+				984C681D3FA64B5B9E0AE081 /* avatar.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

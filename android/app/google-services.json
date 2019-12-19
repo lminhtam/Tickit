@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "632063081492",
+    "firebase_url": "https://tickit-group06.firebaseio.com",
+    "project_id": "tickit-group06",
+    "storage_bucket": "tickit-group06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:632063081492:android:227c6c654c265e9eb1bb01",
+        "android_client_info": {
+          "package_name": "com.tickit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "632063081492-rcfmt003oumdinga4u9j4hvhsbdqtje9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA33mjB6NLEbGC1A_MB5COFWnc_xUOP_qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "632063081492-rcfmt003oumdinga4u9j4hvhsbdqtje9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

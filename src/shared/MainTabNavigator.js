@@ -39,7 +39,7 @@ const HomeStack = createStackNavigator(
 const SearchStack = createStackNavigator(
   {
     Search: SearchPage,
-    Detail: DetailPage,
+    DetailEvent: DetailPage,
   },
   {
     headerMode: 'none',
