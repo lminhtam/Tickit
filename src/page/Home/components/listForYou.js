@@ -139,10 +139,14 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 4,
-    shadowOffset: {width: 5, height: 5},
-    shadowColor: 'grey',
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+
+    elevation: 2,
   },
 });
