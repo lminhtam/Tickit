@@ -112,7 +112,10 @@ export default class DetailPage extends React.Component {
               extraData={this.state}
               keyExtractor={item => item.title}
             />
-            <Button rounded style={styles.bookBtn}>
+            <Button
+              rounded
+              style={styles.bookBtn}
+              onPress={() => this.props.navigation.navigate('Booking')}>
               <Text style={styles.bookText} uppercase={false}>
                 Đặt vé
               </Text>

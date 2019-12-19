@@ -63,7 +63,10 @@ export default class BookingPage extends React.Component {
           <Formik
             initialValues={{fullname: '', phoneNumber: '', email: '', id: ''}}
             validationSchema={this.validationSchema}
-            onSubmit={values => console.log(values)}>
+            onSubmit={values => {
+              console.log(values);
+              this.props.navigation.navigate('TicketInfo');
+            }}>
             {({
               handleChange,
               handleBlur,

@@ -42,6 +42,13 @@
 		CEF16BF753544F2197A218AC /* rubicon-icon-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0F5DF21BF4D34E35BDE8B6C9 /* rubicon-icon-font.ttf */; };
 		72B052C131CF4C548A0DD2EA /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E9F748944AEF45B89E4430E8 /* SimpleLineIcons.ttf */; };
 		65823A3F395E4753A85B3A46 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DFFEDD2391F24DC699FC1420 /* Zocial.ttf */; };
+		32306A1AE5B34F83B33A7A5B /* Facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = A1E8AC819E97433F8808AE82 /* Facebook.png */; };
+		61B6360491A84CE19691BD87 /* Google.png in Resources */ = {isa = PBXBuildFile; fileRef = 8FC16CDD2E854EB6B0E0FD4E /* Google.png */; };
+		30192FAD47F64F4FAAB8433B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = F1845C572246467A9608F65A /* icon.png */; };
+		F0D56C9152FC4CC79B6B99ED /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6C8EFD36856D44DF84BDE88C /* logo.png */; };
+		46C8085185AC4AE7895E9DB0 /* music-laser.png in Resources */ = {isa = PBXBuildFile; fileRef = 94E46F0E1B194D1A84BA6944 /* music-laser.png */; };
+		7B5D7DE82A8D476FA6FDAF9D /* qrcode.png in Resources */ = {isa = PBXBuildFile; fileRef = 919EFD018C3A45EB97B2EB20 /* qrcode.png */; };
+		A648A379367E4BF1984D6CF5 /* talent-show-poster.png in Resources */ = {isa = PBXBuildFile; fileRef = 732C5F6CBF224ABBBB490709 /* talent-show-poster.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +111,13 @@
 		0F5DF21BF4D34E35BDE8B6C9 /* rubicon-icon-font.ttf */ = {isa = PBXFileReference; name = "rubicon-icon-font.ttf"; path = "../node_modules/native-base/Fonts/rubicon-icon-font.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		E9F748944AEF45B89E4430E8 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/native-base/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		DFFEDD2391F24DC699FC1420 /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/native-base/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A1E8AC819E97433F8808AE82 /* Facebook.png */ = {isa = PBXFileReference; name = "Facebook.png"; path = "../src/assets/img/Facebook.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8FC16CDD2E854EB6B0E0FD4E /* Google.png */ = {isa = PBXFileReference; name = "Google.png"; path = "../src/assets/img/Google.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F1845C572246467A9608F65A /* icon.png */ = {isa = PBXFileReference; name = "icon.png"; path = "../src/assets/img/icon.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6C8EFD36856D44DF84BDE88C /* logo.png */ = {isa = PBXFileReference; name = "logo.png"; path = "../src/assets/img/logo.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		94E46F0E1B194D1A84BA6944 /* music-laser.png */ = {isa = PBXFileReference; name = "music-laser.png"; path = "../src/assets/img/music-laser.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		919EFD018C3A45EB97B2EB20 /* qrcode.png */ = {isa = PBXFileReference; name = "qrcode.png"; path = "../src/assets/img/qrcode.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		732C5F6CBF224ABBBB490709 /* talent-show-poster.png */ = {isa = PBXFileReference; name = "talent-show-poster.png"; path = "../src/assets/img/talent-show-poster.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,6 +255,13 @@
 				0F5DF21BF4D34E35BDE8B6C9 /* rubicon-icon-font.ttf */,
 				E9F748944AEF45B89E4430E8 /* SimpleLineIcons.ttf */,
 				DFFEDD2391F24DC699FC1420 /* Zocial.ttf */,
+				A1E8AC819E97433F8808AE82 /* Facebook.png */,
+				8FC16CDD2E854EB6B0E0FD4E /* Google.png */,
+				F1845C572246467A9608F65A /* icon.png */,
+				6C8EFD36856D44DF84BDE88C /* logo.png */,
+				94E46F0E1B194D1A84BA6944 /* music-laser.png */,
+				919EFD018C3A45EB97B2EB20 /* qrcode.png */,
+				732C5F6CBF224ABBBB490709 /* talent-show-poster.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -409,6 +430,13 @@
 				CEF16BF753544F2197A218AC /* rubicon-icon-font.ttf in Resources */,
 				72B052C131CF4C548A0DD2EA /* SimpleLineIcons.ttf in Resources */,
 				65823A3F395E4753A85B3A46 /* Zocial.ttf in Resources */,
+				32306A1AE5B34F83B33A7A5B /* Facebook.png in Resources */,
+				61B6360491A84CE19691BD87 /* Google.png in Resources */,
+				30192FAD47F64F4FAAB8433B /* icon.png in Resources */,
+				F0D56C9152FC4CC79B6B99ED /* logo.png in Resources */,
+				46C8085185AC4AE7895E9DB0 /* music-laser.png in Resources */,
+				7B5D7DE82A8D476FA6FDAF9D /* qrcode.png in Resources */,
+				A648A379367E4BF1984D6CF5 /* talent-show-poster.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

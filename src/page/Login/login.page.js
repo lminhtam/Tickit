@@ -1,10 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Body, Header, Left, Right, Title, Button, Text, Row} from 'native-base';
+import {
+  Body,
+  Header,
+  Left,
+  Right,
+  Title,
+  Button,
+  Text,
+  Form,
+  Input,
+  Item,
+  Label,
+} from 'native-base';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color.js';
-import LoginForm from './components/login.form.js';
 import {Image, TouchableOpacity} from 'react-native';
+import {Formik} from 'formik';
+import * as yup from 'yup';
+import CustomHeader from '../../shared/component/customHeader';
 
 export default class LoginPage extends React.Component {
   static navigationOptions = {
@@ -15,65 +29,138 @@ export default class LoginPage extends React.Component {
     super(props);
   }
 
+  validationSchema = yup.object().shape({
+    username: yup
+      .string()
+      .required('* Vui lòng nhập tên đăng nhập')
+      .matches(/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/, {
+        message: 'Tên đăng nhập không hợp lệ',
+      }),
+    password: yup
+      .string()
+      .required('* Vui lòng nhập mật khẩu')
+      .matches(/(?=.{8,})/, {
+        message: 'Mật khẩu không hợp lệ',
+      }),
+  });
+
   render() {
     return (
       <View>
         <View>
-          <Header
-            hasSegment
-            iosBarStyle="default"
-            androidStatusBarColor={Color.primaryColor}
-            style={{backgroundColor: 'white'}}>
-            <Left style={{flex: 0.2}} />
-            <Body style={{flex: 0.6, alignItems: 'center'}}>
-              <Title style={styles.headerText}>Đăng nhập</Title>
-            </Body>
-            <Right style={{flex: 0.2}} />
-          </Header>
+          <CustomHeader title="Đăng nhập" isLeftBtnVisible={false} />
         </View>
         <ScrollView style={styles.mainViewStyle}>
-          <LoginForm />
-          <View style={styles.bottomWrap}>
-            <TouchableOpacity>
-              <Text style={styles.bottomTxt}>Quên mật khẩu?</Text>
-            </TouchableOpacity>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={styles.bottomTxt}>Chưa có tài khoản?</Text>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('SignUp')}>
-                <Text
-                  style={[
-                    styles.bottomTxt,
-                    {color: 'red', fontWeight: '600', marginLeft: 5},
-                  ]}>
-                  Đăng ký
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <Button style={styles.btnStyle}>
-            <Text uppercase={false} style={styles.btnText}>
-              Đăng nhập
-            </Text>
-          </Button>
-          <View style={styles.addButton}>
-            <Text style={styles.bottomTxt}>Đăng nhập bằng</Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-              <TouchableOpacity>
-                <Image
-                  source={require('../../assets/img/Google.png')}
-                  style={{width: 92, height: 64}}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Image
-                  source={require('../../assets/img/Facebook.png')}
-                  style={{width: 92, height: 64}}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <Formik
+            initialValues={{username: '', password: ''}}
+            validationSchema={this.validationSchema}
+            onSubmit={values => console.log(values)}>
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              isValid,
+              errors,
+              touched,
+              setFieldTouched,
+            }) => {
+              return (
+                <View>
+                  <View>
+                    <Form>
+                      <Item floatingLabel>
+                        <Label style={styles.input}>Tên đăng nhập</Label>
+                        <Input
+                          placeholder="Tên đăng nhập"
+                          style={styles.input}
+                          onTouchStart={() => setFieldTouched('username')}
+                          onChangeText={handleChange('username')}
+                          onBlur={handleBlur('username')}
+                          value={values.username}
+                        />
+                      </Item>
+                      {touched.username && errors.username && (
+                        <Text style={styles.errorText}>{errors.username}</Text>
+                      )}
+                      <Item floatingLabel last>
+                        <Label style={styles.input}>Mật khẩu</Label>
+                        <Input
+                          secureTextEntry={true}
+                          placeholder="Mật khẩu"
+                          style={styles.input}
+                          onTouchStart={() => setFieldTouched('password')}
+                          onChangeText={handleChange('password')}
+                          onBlur={handleBlur('password')}
+                          value={values.password}
+                        />
+                      </Item>
+                      {touched.password && errors.password && (
+                        <Text style={styles.errorText}>{errors.password}</Text>
+                      )}
+                    </Form>
+                  </View>
+                  <View style={styles.bottomWrap}>
+                    <TouchableOpacity>
+                      <Text style={styles.bottomTxt}>Quên mật khẩu?</Text>
+                    </TouchableOpacity>
+                    <View style={{flexDirection: 'row'}}>
+                      <Text style={styles.bottomTxt}>Chưa có tài khoản?</Text>
+                      <TouchableOpacity
+                        onPress={() =>
+                          this.props.navigation.navigate('SignUp')
+                        }>
+                        <Text
+                          style={[
+                            styles.bottomTxt,
+                            {color: 'red', fontWeight: '600', marginLeft: 5},
+                          ]}>
+                          Đăng ký
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <Button
+                    style={[
+                      styles.btnStyle,
+                      {
+                        backgroundColor: isValid
+                          ? Color.primaryColor
+                          : Color.gray,
+                      },
+                    ]}
+                    disabled={!isValid}
+                    onPress={handleSubmit}>
+                    <Text uppercase={false} style={styles.btnText}>
+                      Đăng nhập
+                    </Text>
+                  </Button>
+
+                  <View style={styles.addButton}>
+                    <Text style={styles.bottomTxt}>Đăng nhập bằng</Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-around',
+                      }}>
+                      <TouchableOpacity>
+                        <Image
+                          source={require('../../assets/img/Google.png')}
+                          style={{width: 92, height: 64}}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity>
+                        <Image
+                          source={require('../../assets/img/Facebook.png')}
+                          style={{width: 92, height: 64}}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              );
+            }}
+          </Formik>
         </ScrollView>
       </View>
     );
@@ -85,6 +172,17 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Cabin-Regular',
     fontSize: 28,
+  },
+  input: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 16,
+    color: 'black',
+  },
+  errorText: {
+    color: 'red',
+    fontFamily: 'Cabin-Regular',
+    fontSize: 12,
+    marginLeft: 16,
   },
   btnText: {
     color: 'white',

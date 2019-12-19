@@ -14,6 +14,7 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color.js';
 import ListForYou from './components/listForYou.js';
 import ListTrending from './components/listTrending.js';
+// import Category from 'react-native-category';
 
 export default class HomePage extends React.Component {
   static navigationOptions = {
@@ -22,6 +23,26 @@ export default class HomePage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      category: [
+        {
+          id: 1,
+          title: 'Âm nhạc',
+        },
+        {
+          id: 2,
+          title: 'Workshop',
+        },
+        {
+          id: 3,
+          title: 'Hài kịch',
+        },
+      ],
+    };
+  }
+
+  _itemChoose(item) {
+    alert(item.title);
   }
 
   render() {
@@ -29,7 +50,7 @@ export default class HomePage extends React.Component {
       <View>
         <View>
           <Header
-            hasSegment
+            // hasSegment
             iosBarStyle="default"
             androidStatusBarColor={Color.primaryColor}
             style={{backgroundColor: Color.primaryColor}}>
@@ -39,7 +60,7 @@ export default class HomePage extends React.Component {
             </Body>
             <Right style={{flex: 0.2}} />
           </Header>
-          <Segment style={styles.segmentStyle}>
+          {/* <Segment style={styles.segmentStyle}>
             <Button rounded active={true} style={styles.segmentBtn}>
               <Text uppercase={false} style={styles.segmentText}>
                 Âm nhạc
@@ -55,11 +76,16 @@ export default class HomePage extends React.Component {
                 Hài kịch
               </Text>
             </Button>
-          </Segment>
+          </Segment> */}
+          {/* <Category
+            data={this.state.category}
+            itemSelected={item => this._itemChoose(item)}
+            itemText={'title'} //set attribule of object show in item category
+          /> */}
         </View>
         <ScrollView style={styles.mainViewStyle}>
           <ListForYou />
-          <ListTrending />
+          <ListTrending onPressItem={() => this.props.navigation.navigate('Detail')}/>
         </ScrollView>
       </View>
     );
@@ -72,7 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   segmentBtn: {
-    backgroundColor: Color.primaryColor,
+    backgroundColor: Color.inactiveColor,
     justifyContent: 'space-around',
     borderWidth: 0,
     borderColor: Color.primaryColor,
@@ -89,48 +115,6 @@ const styles = StyleSheet.create({
   },
   mainViewStyle: {
     backgroundColor: 'white',
-    marginBottom: 100,
-  },
-  titleTextStyle: {
-    color: Color.primaryColor,
-    fontFamily: 'Cabin-SemiBold',
-    fontSize: 20,
-    margin: 16,
-  },
-  showName: {
-    color: 'black',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 20,
-  },
-  descriptionText: {
-    color: Color.gray,
-    fontFamily: 'Cabin-Regular',
-    fontSize: 16,
-  },
-  dateText: {
-    color: 'black',
-    fontFamily: 'Cabin-Italic',
-    fontSize: 14,
-  },
-  btnText: {
-    color: 'white',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 16,
-  },
-  btnStyle: {
-    backgroundColor: Color.primaryColor,
-    justifyContent: 'center',
-    marginTop: 16,
-  },
-  showItem: {
-    flex: 1,
-    flexDirection: 'row',
-    margin: 16,
-    alignItems: 'center',
-    elevation: 4,
-    shadowOffset: {width: 5, height: 5},
-    shadowColor: 'grey',
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    marginBottom: 60,
   },
 });

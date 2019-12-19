@@ -68,7 +68,10 @@ export default class TicketInformationPage extends React.Component {
               <Text style={styles.priceText}>$39.99</Text>
             </View>
           </View>
-          <Button rounded style={styles.bookBtn}>
+          <Button
+            rounded
+            style={styles.bookBtn}
+            onPress={() => this.props.navigation.navigate('TicketDetail')}>
             <Text style={styles.bookText} uppercase={false}>
               Thanh toán
             </Text>
