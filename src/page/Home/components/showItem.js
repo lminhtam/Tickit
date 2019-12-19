@@ -2,6 +2,7 @@ import {Button, Text} from 'native-base';
 import React from 'react';
 import {StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import Color from '../../../shared/Color';
+import {SCREEN_WIDTH} from '../../../shared/ultility';
 
 export default class ShowItem extends React.Component {
   render() {
@@ -17,10 +18,7 @@ export default class ShowItem extends React.Component {
               {this.props.item.category}
             </Text>
             <Text style={styles.dateText}>{this.props.item.date}</Text>
-            <Button
-              rounded
-              small
-              style={styles.btnStyle}>
+            <Button rounded small style={styles.btnStyle}>
               <Text uppercase={false} style={styles.btnText}>
                 Đặt vé
               </Text>
@@ -61,12 +59,18 @@ const styles = StyleSheet.create({
   showItem: {
     flex: 1,
     flexDirection: 'row',
+    padding: 16,
     margin: 16,
     alignItems: 'center',
-    elevation: 4,
-    shadowOffset: {width: 5, height: 5},
-    shadowColor: 'grey',
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    borderRadius: 5,
+    width: SCREEN_WIDTH - 32,
   },
 });

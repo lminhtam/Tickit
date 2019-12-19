@@ -54,7 +54,7 @@ export default class LoginPage extends React.Component {
           <Formik
             initialValues={{username: '', password: ''}}
             validationSchema={this.validationSchema}
-            onSubmit={values => console.log(values)}>
+            onSubmit={values => this.props.navigation.navigate('Profile')}>
             {({
               handleChange,
               handleBlur,
@@ -68,7 +68,7 @@ export default class LoginPage extends React.Component {
               return (
                 <View>
                   <View>
-                    <Form>
+                    <Form style={{marginRight: 16}}>
                       <Item floatingLabel>
                         <Label style={styles.input}>Tên đăng nhập</Label>
                         <Input
@@ -83,7 +83,7 @@ export default class LoginPage extends React.Component {
                       {touched.username && errors.username && (
                         <Text style={styles.errorText}>{errors.username}</Text>
                       )}
-                      <Item floatingLabel last>
+                      <Item floatingLabel>
                         <Label style={styles.input}>Mật khẩu</Label>
                         <Input
                           secureTextEntry={true}
@@ -101,7 +101,10 @@ export default class LoginPage extends React.Component {
                     </Form>
                   </View>
                   <View style={styles.bottomWrap}>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        this.props.navigation.navigate('ForgotPassword')
+                      }>
                       <Text style={styles.bottomTxt}>Quên mật khẩu?</Text>
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row'}}>

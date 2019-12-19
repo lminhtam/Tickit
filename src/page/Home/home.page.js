@@ -84,7 +84,7 @@ export default class HomePage extends React.Component {
           /> */}
         </View>
         <ScrollView style={styles.mainViewStyle}>
-          <ListForYou />
+          <ListForYou onPressItem={() => this.props.navigation.navigate('Detail')}/>
           <ListTrending onPressItem={() => this.props.navigation.navigate('Detail')}/>
         </ScrollView>
       </View>
