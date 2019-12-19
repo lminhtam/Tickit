@@ -3,14 +3,13 @@ import {Button, Text} from 'native-base';
 import * as React from 'react';
 import {
   FlatList,
-  Image,
   Platform,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import Color from '../../shared/Color';
 import SearchBarComponent from './components/searchBar';
+import ShowItem from '../Home/components/showItem';
 const show = [
   {
     title: 'Ca nhạc',
@@ -84,21 +83,10 @@ export default class SearchPage extends React.Component {
   };
 
   renderItem = ({item}) => (
-    <TouchableOpacity>
-      <View style={styles.showItem}>
-        <Image source={require('../../assets/img/talent-show-poster.png')} />
-        <View style={{marginLeft: 16}}>
-          <Text style={styles.showName}>{item.title}</Text>
-          <Text style={styles.descriptionText}>{item.category}</Text>
-          <Text style={styles.dateText}>{item.date}</Text>
-          <Button rounded small style={styles.btnStyle}>
-            <Text uppercase={false} style={styles.btnText}>
-              Đặt vé
-            </Text>
-          </Button>
-        </View>
-      </View>
-    </TouchableOpacity>
+    <ShowItem
+      item={item}
+      onPressItem={() => this.props.navigation.navigate('Detail')}
+    />
   );
 
   render() {

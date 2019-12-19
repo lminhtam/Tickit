@@ -12,6 +12,7 @@ import Color from './Color';
 import SignUpPage from '../page/SignUp/signUp.page';
 import TicketInformation from '../page/TicketInformation/ticketInformation.page';
 import TicketDetailPage from '../page/TicketDetail/ticketDetail.page';
+import ReactNavigation from 'react-navigation';
 
 const HomeStack = createStackNavigator(
   {
@@ -23,7 +24,7 @@ const HomeStack = createStackNavigator(
   },
   {
     headerMode: 'none',
-    initialRouteName: 'TicketDetail',
+    initialRouteName: 'Home',
     navigationOptions: {
       tabBarIcon: ({tintColor}) => (
         <Icon name="home" type="entypo" size={20} color={tintColor} />
@@ -34,10 +35,12 @@ const HomeStack = createStackNavigator(
 
 const SearchStack = createStackNavigator(
   {
-    SearchPage,
+    Search: SearchPage,
+    Detail: DetailPage,
   },
   {
     headerMode: 'none',
+    initialRouteName: 'Search',
     navigationOptions: {
       tabBarIcon: ({tintColor}) => (
         <Icon name="search1" type="antdesign" size={20} color={tintColor} />

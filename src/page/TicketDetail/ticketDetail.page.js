@@ -47,19 +47,8 @@ export default class TicketDetailPage extends React.Component {
               />
               <Text style={styles.infoText}>15/10/2019 - 19:00</Text>
             </View>
-            <View
-              style={{
-                borderStyle: 'dashed',
-                borderWidth: 1,
-                borderRadius: 1,
-                margin: 16,
-              }}></View>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: 16,
-              }}>
+            <View style={styles.lineSeperator}></View>
+            <View style={styles.qrContainer}>
               <Image
                 source={require('../../assets/img/qrcode.png')}
                 resizeMode="contain"
@@ -144,5 +133,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Cabin-Regular',
     fontSize: 20,
     color: 'white',
+  },
+  qrContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 16,
+  },
+  lineSeperator: {
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderRadius: 1,
+    margin: 16,
   },
 });
