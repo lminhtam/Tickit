@@ -14,7 +14,6 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color.js';
 import ListForYou from './components/listForYou.js';
 import ListTrending from './components/listTrending.js';
-// import Category from 'react-native-category';
 
 export default class HomePage extends React.Component {
   static navigationOptions = {
@@ -50,7 +49,7 @@ export default class HomePage extends React.Component {
       <View>
         <View>
           <Header
-            // hasSegment
+            hasSegment
             iosBarStyle="default"
             androidStatusBarColor={Color.primaryColor}
             style={{backgroundColor: Color.primaryColor}}>
@@ -60,7 +59,7 @@ export default class HomePage extends React.Component {
             </Body>
             <Right style={{flex: 0.2}} />
           </Header>
-          {/* <Segment style={styles.segmentStyle}>
+          <Segment style={styles.segmentStyle}>
             <Button rounded active={true} style={styles.segmentBtn}>
               <Text uppercase={false} style={styles.segmentText}>
                 Âm nhạc
@@ -76,16 +75,15 @@ export default class HomePage extends React.Component {
                 Hài kịch
               </Text>
             </Button>
-          </Segment> */}
-          {/* <Category
-            data={this.state.category}
-            itemSelected={item => this._itemChoose(item)}
-            itemText={'title'} //set attribule of object show in item category
-          /> */}
+          </Segment>
         </View>
         <ScrollView style={styles.mainViewStyle}>
-          <ListForYou onPressItem={() => this.props.navigation.navigate('Detail')}/>
-          <ListTrending onPressItem={() => this.props.navigation.navigate('Detail')}/>
+          <ListForYou
+            onPressItem={() => this.props.navigation.navigate('Detail')}
+          />
+          <ListTrending
+            onPressItem={() => this.props.navigation.navigate('Detail')}
+          />
         </ScrollView>
       </View>
     );

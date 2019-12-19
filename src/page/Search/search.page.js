@@ -85,7 +85,7 @@ export default class SearchPage extends React.Component {
   renderItem = ({item}) => (
     <ShowItem
       item={item}
-      onPressItem={() => this.props.navigation.navigate('Detail')}
+      onPressItem={() => this.props.navigation.navigate('DetailEvent')}
     />
   );
 

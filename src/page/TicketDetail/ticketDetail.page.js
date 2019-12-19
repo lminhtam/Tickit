@@ -2,7 +2,13 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, ScrollView, View, Image} from 'react-native';
 import {Text, Button, Icon} from 'native-base';
 import Color from '../../shared/Color.js';
+import QRCode from 'react-native-qrcode-svg';
 import CustomHeader from '../../shared/component/customHeader';
+import {StackActions} from 'react-navigation';
+
+const popAction = StackActions.pop({
+  n: 4,
+});
 
 export default class TicketDetailPage extends React.Component {
   static navigationOptions = {
@@ -11,7 +17,20 @@ export default class TicketDetailPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      used: '',
+    };
   }
+
+  componentDidMount() {
+    let used = this.props.navigation.getParam('used');
+    this.setState({used: used});
+  }
+
+  onPressBack = () => {
+    if (this.state.used === 'home') this.props.navigation.dispatch(popAction);
+    else this.props.navigation.goBack();
+  };
 
   render() {
     return (
@@ -19,7 +38,7 @@ export default class TicketDetailPage extends React.Component {
         <CustomHeader
           title="Chi tiết vé"
           isLeftBtnVisible={true}
-          onPressBtnLeft={() => this.props.navigation.goBack()}
+          onPressBtnLeft={() => this.onPressBack()}
         />
         <ScrollView style={{backgroundColor: '#AC73E480'}}>
           <View style={styles.ticketContainer}>
@@ -49,10 +68,7 @@ export default class TicketDetailPage extends React.Component {
             </View>
             <View style={styles.lineSeperator}></View>
             <View style={styles.qrContainer}>
-              <Image
-                source={require('../../assets/img/qrcode.png')}
-                resizeMode="contain"
-              />
+              <QRCode value="SVIP Steven Black" />
             </View>
           </View>
           <Button rounded style={styles.bookBtn}>
