@@ -26,7 +26,7 @@ export default class BookingPage extends React.Component {
     phoneNumber: yup
       .string()
       .required('* Vui lòng nhập số điện thoại')
-      .matches(/((09|03|07|08|05)+([0-9]{8})\b)/g, {
+      .matches(/((09|03|07|08|05)+([0-9]{8})\b)/, {
         message: 'Số điện thoại không hợp lệ',
       }),
     fullname: yup
@@ -41,11 +41,8 @@ export default class BookingPage extends React.Component {
     id: yup
       .string()
       .required('* Vui lòng nhập CMND/CCCD')
-      .matches(/([0-9]{9})\b/, {
-        message: 'CMND không hợp lệ',
-      })
-      .matches(/([0-9]{12})\b/, {
-        message: 'Căn cước công dân không hợp lệ',
+      .matches(/^([0-9]{9}|[0-9]{12})$/, {
+        message: 'CMND/CCCD không hợp lệ',
       }),
   });
 
@@ -58,7 +55,7 @@ export default class BookingPage extends React.Component {
           onPressBtnLeft={() => this.props.navigation.goBack()}
         />
         <ScrollView
-          style={{backgroundColor: Color.lightGray}}
+          style={{backgroundColor: 'white'}}
           contentContainerStyle={styles.mainViewStyle}>
           <Formik
             initialValues={{fullname: '', phoneNumber: '', email: '', id: ''}}
@@ -151,7 +148,7 @@ export default class BookingPage extends React.Component {
 
 const styles = StyleSheet.create({
   mainViewStyle: {
-    backgroundColor: Color.lightGray,
+    backgroundColor: 'white',
   },
   container: {
     marginBottom: 60,

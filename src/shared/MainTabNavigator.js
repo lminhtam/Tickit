@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {Icon} from 'react-native-elements';
+import {createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import HomePage from '../page/Home/home.page';
@@ -12,7 +13,9 @@ import Color from './Color';
 import SignUpPage from '../page/SignUp/signUp.page';
 import TicketInformation from '../page/TicketInformation/ticketInformation.page';
 import TicketDetailPage from '../page/TicketDetail/ticketDetail.page';
-import ReactNavigation from 'react-navigation';
+import ForgotPasswordPage from '../page/ForgotPassword/forgotPassword.page';
+import ProfilePage from '../page/Profile/profile.page';
+import BookedTicketPage from '../page/BookedTicket/bookedTicket.page';
 
 const HomeStack = createStackNavigator(
   {
@@ -49,13 +52,37 @@ const SearchStack = createStackNavigator(
   },
 );
 
-const ProfileStack = createStackNavigator(
+const LoginStack = createStackNavigator(
   {
-    Login: LoginPage,
-    SignUp: SignUpPage,
+    LoginPage: LoginPage,
+    ForgotPassword: ForgotPasswordPage,
   },
   {
-    headerMode: 'float',
+    headerMode: 'none',
+    initialRouteName: 'LoginPage',
+  },
+);
+
+const ProfileStack = createStackNavigator(
+  {
+    ProfilePage: ProfilePage,
+    BookedTicket: BookedTicketPage,
+    DetailTicket: TicketDetailPage,
+  },
+  {
+    headerMode: 'none',
+    initialRouteName: 'ProfilePage',
+  },
+);
+
+const ProfileSwitch = createSwitchNavigator(
+  {
+    Login: LoginStack,
+    SignUp: SignUpPage,
+    Profile: ProfileStack,
+  },
+  {
+    headerMode: 'none',
     navigationOptions: {
       tabBarIcon: ({tintColor}) => (
         <Icon
@@ -87,7 +114,7 @@ const ProfileStack = createStackNavigator(
 const MainTabNavigator = createBottomTabNavigator(
   {
     Home: HomeStack,
-    Profile: ProfileStack,
+    Profile: ProfileSwitch,
     Search: SearchStack,
   },
   {
@@ -96,6 +123,7 @@ const MainTabNavigator = createBottomTabNavigator(
       inactiveTintColor: Color.inactiveColor,
       style: {
         backgroundColor: 'white',
+        height: 60,
       },
       showLabel: false,
     },

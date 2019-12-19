@@ -36,7 +36,7 @@ export default class ListForYou extends React.Component {
   }
 
   renderItem = ({item}) => (
-    <TouchableOpacity style={styles.showItem}>
+    <TouchableOpacity style={styles.showItem} onPress={this.props.onPressItem}>
       <CardItem cardBody>
         <Image
           style={{resizeMode: 'cover'}}
@@ -46,7 +46,11 @@ export default class ListForYou extends React.Component {
           <Text style={styles.showName}>{item.title}</Text>
           <Text style={styles.descriptionText}>{item.category}</Text>
           <Text style={styles.dateText}>{item.date}</Text>
-          <Button rounded small style={styles.btnStyle}>
+          <Button
+            rounded
+            small
+            style={styles.btnStyle}
+            onPress={this.props.onPressItem}>
             <Text uppercase={false} style={styles.btnText}>
               Đặt vé
             </Text>

@@ -63,7 +63,7 @@ export default class SignUpPage extends React.Component {
           <Formik
             initialValues={{username: '', password: '', fullname: ''}}
             validationSchema={this.validationSchema}
-            onSubmit={values => console.log(values)}>
+            onSubmit={values => this.props.navigation.navigate('Login')}>
             {({
               handleChange,
               handleBlur,
@@ -76,7 +76,7 @@ export default class SignUpPage extends React.Component {
             }) => {
               return (
                 <View>
-                  <Form>
+                  <Form style={{marginRight:16}}>
                     <Item floatingLabel>
                       <Label style={styles.input}>Họ và tên</Label>
                       <Input
@@ -105,7 +105,7 @@ export default class SignUpPage extends React.Component {
                     {touched.username && errors.username && (
                       <Text style={styles.errorText}>{errors.username}</Text>
                     )}
-                    <Item floatingLabel last>
+                    <Item floatingLabel>
                       <Label style={styles.input}>Mật khẩu</Label>
                       <Input
                         secureTextEntry={true}
