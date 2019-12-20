@@ -94,13 +94,17 @@ export default class SearchPage extends React.Component {
           placeholder="Nhập tên show"
           value={this.state.search}
         />
-        <FlatList
-          data={this.state.show}
-          renderItem={this.renderItem}
-          enableEmptySections={true}
-          style={{marginTop: 10}}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        {this.state.show && this.state.show.length > 0 ? (
+          <FlatList
+            data={this.state.show}
+            renderItem={this.renderItem}
+            enableEmptySections={true}
+            style={{marginTop: 10}}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <Text style={styles.notFound}>Không tìm thấy kết quả phù hợp.</Text>
+        )}
       </View>
     );
   }
@@ -108,10 +112,17 @@ export default class SearchPage extends React.Component {
 
 const styles = StyleSheet.create({
   viewStyle: {
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flex: 1,
     backgroundColor: 'white',
     marginTop: Platform.OS === 'ios' ? 30 : 0,
+  },
+  notFound: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 16,
+    color: Color.gray,
+    alignSelf: 'center',
+    marginTop: 16,
   },
   textStyle: {
     padding: 10,
