@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Text, ListItem, Icon, Button} from 'native-base';
+import {Text, Icon, Button} from 'native-base';
 import React from 'react';
 import {
   ScrollView,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
-import { SCREEN_WIDTH } from '../../shared/ultility.js';
+import {SCREEN_WIDTH} from '../../shared/ultility.js';
 
 const list = [
   {
@@ -50,16 +50,16 @@ export default class ProfilePage extends React.Component {
     return (
       <TouchableOpacity
         onPress={() => this.props.navigation.navigate(navigation)}>
-          <View>
-        <View style={styles.listContainer}>
-          <Text style={styles.name}>{item.title}</Text>
-          <Icon
-            name="keyboard-arrow-right"
-            type="MaterialIcons"
-            style={styles.icon}
-          />
-        </View>
-        <View style={styles.lineSeperator} />
+        <View>
+          <View style={styles.listContainer}>
+            <Text style={styles.name}>{item.title}</Text>
+            <Icon
+              name="keyboard-arrow-right"
+              type="MaterialIcons"
+              style={styles.icon}
+            />
+          </View>
+          <View style={styles.lineSeperator} />
         </View>
       </TouchableOpacity>
     );
@@ -69,12 +69,7 @@ export default class ProfilePage extends React.Component {
     return (
       <View style={{marginBottom: 60}}>
         <View>
-          <CustomHeader
-            title="Trang cá nhân"
-            isLeftBtnVisible={false}
-            isRightBtnVisible={true}
-            rightBtnName="search"
-          />
+          <CustomHeader title="Trang cá nhân" isLeftBtnVisible={false} />
         </View>
         <ScrollView>
           <View style={styles.infoContainer}>

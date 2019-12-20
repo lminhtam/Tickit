@@ -40,7 +40,7 @@ export default class SignUpPage extends React.Component {
       .string()
       .required('* Vui lòng nhập mật khẩu')
       .matches(/(?=.{8,})/, {
-        message: 'Mật khẩu không hợp lệ',
+        message: 'Mật khẩu phải gồm 8 kí tự',
       }),
     fullname: yup
       .string()

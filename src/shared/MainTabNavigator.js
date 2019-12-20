@@ -17,13 +17,23 @@ import ForgotPasswordPage from '../page/ForgotPassword/forgotPassword.page';
 import ProfilePage from '../page/Profile/profile.page';
 import BookedTicketPage from '../page/BookedTicket/bookedTicket.page';
 
-const HomeStack = createStackNavigator(
+const BookingStack = createStackNavigator(
   {
-    Home: HomePage,
     Detail: DetailPage,
     Booking: BookingPage,
     TicketInfo: TicketInformation,
     TicketDetail: TicketDetailPage,
+  },
+  {
+    headerMode: 'none',
+    initialRouteName: 'Detail',
+  },
+);
+
+const HomeSwitch = createSwitchNavigator(
+  {
+    Home: HomePage,
+    BookingStack: BookingStack,
   },
   {
     headerMode: 'none',
@@ -36,10 +46,10 @@ const HomeStack = createStackNavigator(
   },
 );
 
-const SearchStack = createStackNavigator(
+const SearchSwitch = createStackNavigator(
   {
     Search: SearchPage,
-    DetailEvent: DetailPage,
+    BookingStackSearch: BookingStack,
   },
   {
     headerMode: 'none',
@@ -113,9 +123,9 @@ const ProfileSwitch = createSwitchNavigator(
 
 const MainTabNavigator = createBottomTabNavigator(
   {
-    Home: HomeStack,
+    Home: HomeSwitch,
     Profile: ProfileSwitch,
-    Search: SearchStack,
+    Search: SearchSwitch,
   },
   {
     tabBarOptions: {
