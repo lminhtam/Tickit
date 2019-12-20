@@ -30,7 +30,7 @@ export default class BookingPage extends React.Component {
         message: 'Số điện thoại không hợp lệ',
       }),
     fullname: yup
-      .string()
+      .string().trim()
       .required('* Vui lòng nhập họ và tên')
       .matches(
         /[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/u,
