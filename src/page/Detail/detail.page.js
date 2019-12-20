@@ -38,7 +38,13 @@ export default class DetailPage extends React.Component {
     super(props);
     this.state = {
       tickets: ticket,
+      used: '',
     };
+  }
+
+  componentDidMount() {
+    let used = this.props.navigation.getParam('used');
+    this.setState({used: used});
   }
 
   renderItem = ({item}) => (
@@ -56,7 +62,7 @@ export default class DetailPage extends React.Component {
         <CustomHeader
           title="Chi tiết"
           isLeftBtnVisible={true}
-          onPressBtnLeft={() => this.props.navigation.goBack()}
+          onPressBtnLeft={() => this.props.navigation.navigate(this.state.used)}
         />
         <ScrollView contentContainerStyle={styles.mainViewStyle}>
           <Image

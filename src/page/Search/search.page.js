@@ -1,12 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Button, Text} from 'native-base';
 import * as React from 'react';
-import {
-  FlatList,
-  Platform,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {FlatList, Platform, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color';
 import SearchBarComponent from './components/searchBar';
 import ShowItem from '../Home/components/showItem';
@@ -85,7 +80,9 @@ export default class SearchPage extends React.Component {
   renderItem = ({item}) => (
     <ShowItem
       item={item}
-      onPressItem={() => this.props.navigation.navigate('DetailEvent')}
+      onPressItem={() =>
+        this.props.navigation.navigate('Detail', {used: 'Search'})
+      }
     />
   );
 

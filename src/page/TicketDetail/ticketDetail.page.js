@@ -7,7 +7,7 @@ import CustomHeader from '../../shared/component/customHeader';
 import {StackActions} from 'react-navigation';
 
 const popAction = StackActions.pop({
-  n: 4,
+  n: 3,
 });
 
 export default class TicketDetailPage extends React.Component {
@@ -68,7 +68,7 @@ export default class TicketDetailPage extends React.Component {
             </View>
             <View style={styles.lineSeperator}></View>
             <View style={styles.qrContainer}>
-              <QRCode value="SVIP Steven Black" />
+              <QRCode value="Trang ne" />
             </View>
           </View>
           <Button rounded style={styles.bookBtn}>
