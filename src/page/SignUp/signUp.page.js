@@ -33,7 +33,7 @@ export default class SignUpPage extends React.Component {
     username: yup
       .string()
       .required('* Vui lòng nhập tên đăng nhập')
-      .matches(/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/, {
+      .matches(/^[a-zA-Z0-9]+([_\s\-]?[a-zA-Z0-9])*$/, {
         message: 'Tên đăng nhập không hợp lệ',
       }),
     password: yup
@@ -43,7 +43,7 @@ export default class SignUpPage extends React.Component {
         message: 'Mật khẩu phải gồm 8 kí tự',
       }),
     fullname: yup
-      .string()
+      .string().trim()
       .required('* Vui lòng nhập họ và tên')
       .matches(
         /[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/u,

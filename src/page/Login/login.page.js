@@ -33,7 +33,7 @@ export default class LoginPage extends React.Component {
     username: yup
       .string()
       .required('* Vui lòng nhập tên đăng nhập')
-      .matches(/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/, {
+      .matches(/^[a-zA-Z0-9]+([_\s\-]?[a-zA-Z0-9])*$/, {
         message: 'Tên đăng nhập không hợp lệ',
       }),
     password: yup

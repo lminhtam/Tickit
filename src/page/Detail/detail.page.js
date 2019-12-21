@@ -6,6 +6,7 @@ import {
   View,
   Image,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 
 import {Text, Button, Icon} from 'native-base';
@@ -16,16 +17,22 @@ import {SCREEN_WIDTH} from '../../shared/ultility';
 
 const ticket = [
   {
+    index: 1,
     title: 'SVIP',
     price: '$39.99',
+    quantity: 0,
   },
   {
+    index: 2,
     title: 'VVIP',
     price: '$19.99',
+    quantity: 0,
   },
   {
+    index: 3,
     title: 'GA',
     price: '$9.99',
+    quantity: 0,
   },
 ];
 
@@ -47,11 +54,66 @@ export default class DetailPage extends React.Component {
     this.setState({used: used});
   }
 
-  renderItem = ({item}) => (
+  onPressMinusBtn = (quantity, index) => {
+    let items = this.state.tickets;
+    items[index].quantity = quantity - 1;
+    this.setState({tickets: items});
+  };
+
+  onPressPlusBtn = (quantity, index) => {
+    let items = this.state.tickets;
+    items[index].quantity = quantity + 1;
+    this.setState({tickets: items});
+  };
+
+  renderItem = ({item, index}) => (
     <View style={styles.ticketItem}>
-      <View style={{marginLeft: 16}}>
+      <View>
         <Text style={styles.ticketType}>{item.title}</Text>
         <Text style={styles.ticketPrice}>{item.price}</Text>
+      </View>
+      <View style={styles.quantityBtn}>
+        <TouchableOpacity
+          onPress={() => this.onPressMinusBtn(item.quantity, index)}
+          disabled={item.quantity <= 0}
+          style={[
+            styles.btnContainer,
+            {
+              borderColor: item.quantity > 0 ? Color.primaryColor : Color.gray,
+              marginRight: 16,
+            },
+          ]}>
+          <Icon
+            style={[
+              styles.iconStyle,
+              {color: item.quantity > 0 ? Color.primaryColor : Color.gray},
+            ]}
+            name="minus"
+            type="AntDesign"
+          />
+        </TouchableOpacity>
+        <View style={styles.quantityContainer}>
+          <Text style={styles.ticketType}>{item.quantity}</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => this.onPressPlusBtn(item.quantity, index)}
+          disabled={item.quantity >= 2}
+          style={[
+            styles.btnContainer,
+            {
+              borderColor: item.quantity < 2 ? Color.primaryColor : Color.gray,
+              marginLeft: 16,
+            },
+          ]}>
+          <Icon
+            style={[
+              styles.iconStyle,
+              {color: item.quantity < 2 ? Color.primaryColor : Color.gray},
+            ]}
+            name="plus"
+            type="AntDesign"
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -116,7 +178,7 @@ export default class DetailPage extends React.Component {
               data={this.state.tickets}
               renderItem={this.renderItem}
               extraData={this.state}
-              keyExtractor={item => item.title}
+              keyExtractor={item => item.index}
             />
             <Button
               rounded
@@ -158,6 +220,11 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Cabin-Regular',
     fontSize: 20,
+  },
+  quantityContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 20,
   },
   ticketPrice: {
     color: Color.gray,
@@ -234,5 +301,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Cabin-Regular',
     fontSize: 20,
     color: 'white',
+  },
+  iconStyle: {
+    color: Color.primaryColor,
+    fontSize: 22,
+  },
+  quantityBtn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnContainer: {
+    borderWidth: 1,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

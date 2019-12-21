@@ -35,6 +35,12 @@ export default class ListForYou extends React.Component {
     };
   }
 
+  checkCategory = value => {
+    return (
+      value.category === this.props.filter || this.props.filter === 'Tất cả'
+    );
+  };
+
   renderItem = ({item}) => (
     <TouchableOpacity style={styles.showItem} onPress={this.props.onPressItem}>
       <CardItem cardBody>
@@ -68,7 +74,7 @@ export default class ListForYou extends React.Component {
           ref={c => {
             this._carousel = c;
           }}
-          data={show}
+          data={show.filter(this.checkCategory)}
           renderItem={this.renderItem}
           layout={'stack'}
           layoutCardOffset={'18'}
