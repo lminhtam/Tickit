@@ -219,7 +219,7 @@ export default class DetailPage extends React.Component {
             <View style={{width: SCREEN_WIDTH}}>
               <Image
                 source={{uri: this.state.item.card}}
-                style={{width: '100%', height: 250}}
+                style={{width: '100%', height: 200}}
                 resizeMode="stretch"
               />
               <View style={styles.nameContainer}>

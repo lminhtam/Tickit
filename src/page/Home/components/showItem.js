@@ -12,10 +12,12 @@ export default class ShowItem extends React.Component {
           <Image
             source={{uri: this.props.item.card}}
             resizeMode="cover"
-            style={{width: '100%', height: '50%'}}
+            style={{width: '100%', height: '40%'}}
           />
           <View style={{width: '100%'}}>
-            <Text style={styles.showName}>{this.props.item.title}</Text>
+            <Text numberOfLines={2} style={styles.showName}>
+              {this.props.item.title}
+            </Text>
             <Text style={styles.descriptionText}>
               {this.props.item.category}
             </Text>
@@ -77,8 +79,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
-    maxHeight: 400,
-    minHeight: 280,
-    height: '100%'
+    height: 260,
   },
 });

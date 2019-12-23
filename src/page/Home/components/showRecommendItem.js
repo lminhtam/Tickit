@@ -11,14 +11,14 @@ export default class ShowRecommendItem extends React.Component {
         onPress={this.props.onPressItem}>
         <Card>
           <CardItem>
-            <View style={{width: '100%', height: 370}}>
+            <View style={{width: '100%', height: 300}}>
               <Image
                 source={{uri: this.props.item.card}}
                 resizeMode="cover"
                 style={{width: '100%', height: '50%'}}
               />
               <View style={{width: '100%'}}>
-                <Text style={styles.showName}>{this.props.item.title}</Text>
+                <Text numberOfLines={2} style={styles.showName}>{this.props.item.title}</Text>
                 <Text style={styles.descriptionText}>
                   {this.props.item.category}
                 </Text>
