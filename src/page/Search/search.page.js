@@ -1,92 +1,69 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Button, Text} from 'native-base';
+import {Button, Text, Spinner} from 'native-base';
 import * as React from 'react';
 import {FlatList, Platform, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color';
 import SearchBarComponent from './components/searchBar';
 import ShowItem from '../Home/components/showItem';
-const show = [
-  {
-    title: 'Ca nhạc',
-    category: 'Âm nhạc',
-    date: 'October 15',
-  },
-  {
-    title: 'Trò chơi',
-    category: 'Hài kịch',
-    date: 'October 15',
-  },
-  {
-    title: 'Jiyeon Lala',
-    category: 'Workshop',
-    date: 'October 15',
-  },
-  {
-    title: 'Jiyeon haha',
-    category: 'Workshop',
-    date: 'October 15',
-  },
-  {
-    title: 'Girldf',
-    category: 'Workshop',
-    date: 'October 15',
-  },
-  {
-    title: 'The talent show',
-    category: 'Workshop',
-    date: 'October 15',
-  },
-];
+import Ticket from '../../../firebaseConfig';
 
 export default class SearchPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {search: '', show: show};
-    this.arrayholder = [];
+    this.state = {
+      search: '',
+      show: [],
+      isLoading: true,
+    };
+    // this.arrayholder = [];
   }
 
-  search = text => {
-    console.log(text);
-  };
-  clear = () => {
-    this.search.clear();
+  readUserData = async () => {
+    let data = [];
+    await Ticket.database()
+      .ref()
+      .child('shows')
+      .once('value', snapshot => {
+        data = snapshot.val();
+      });
+    await this.setState({show: data});
   };
 
-  SearchFilterFunction(text) {
-    const newData = show.filter(function(item) {
-      const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
-    });
+  componentDidMount() {
+    this.readUserData();
+    this.setState({isLoading: false})
+  }
 
-    this.setState({
-      show: newData,
+  filterShow = item => {
+    return (
+      item.title.toLowerCase().includes(this.state.search.toLowerCase()) ||
+      item.category.toLowerCase().includes(this.state.search.toLowerCase())
+    );
+  };
+
+  SearchFilterFunction = async text => {
+    await this.setState({
       search: text,
     });
-  }
+  };
 
-  ListViewItemSeparator = () => {
+  renderItem = ({item}) => {
+    const index = this.state.show.indexOf(item);
     return (
-      <View
-        style={{
-          height: 0.3,
-          width: '90%',
-          backgroundColor: '#080808',
-        }}
+      <ShowItem
+        item={item}
+        onPressItem={() =>
+          this.props.navigation.navigate('Detail', {
+            used: 'Search',
+            index: index,
+          })
+        }
       />
     );
   };
 
-  renderItem = ({item}) => (
-    <ShowItem
-      item={item}
-      onPressItem={() =>
-        this.props.navigation.navigate('Detail', {used: 'Search'})
-      }
-    />
-  );
-
   render() {
+    if (this.state.isLoading) return <Spinner color={Color.primaryColor} />;
     return (
       <View style={styles.viewStyle}>
         <SearchBarComponent
@@ -94,13 +71,17 @@ export default class SearchPage extends React.Component {
           placeholder="Nhập tên show"
           value={this.state.search}
         />
-        <FlatList
-          data={this.state.show}
-          renderItem={this.renderItem}
-          enableEmptySections={true}
-          style={{marginTop: 10}}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        {this.state.show && this.state.show.length > 0 ? (
+          <FlatList
+            data={this.state.show.filter(this.filterShow)}
+            renderItem={this.renderItem}
+            enableEmptySections={true}
+            style={{marginTop: 10}}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <Text style={styles.notFound}>Không tìm thấy kết quả phù hợp.</Text>
+        )}
       </View>
     );
   }
@@ -108,10 +89,17 @@ export default class SearchPage extends React.Component {
 
 const styles = StyleSheet.create({
   viewStyle: {
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flex: 1,
     backgroundColor: 'white',
     marginTop: Platform.OS === 'ios' ? 30 : 0,
+  },
+  notFound: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 16,
+    color: Color.gray,
+    alignSelf: 'center',
+    marginTop: 16,
   },
   textStyle: {
     padding: 10,

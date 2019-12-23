@@ -6,28 +6,17 @@ import {
   View,
   Image,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
-
-import {Text, Button, Icon} from 'native-base';
+import {Text, Button, Icon, Spinner} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import StarRating from 'react-native-star-rating';
 import {SCREEN_WIDTH} from '../../shared/ultility';
-
-const ticket = [
-  {
-    title: 'SVIP',
-    price: '$39.99',
-  },
-  {
-    title: 'VVIP',
-    price: '$19.99',
-  },
-  {
-    title: 'GA',
-    price: '$9.99',
-  },
-];
+import Ticket from '../../../firebaseConfig';
+import ReadMore from 'react-native-read-more-text';
+import firebase from 'firebase';
+import CustomModal from '../../shared/component/customModal';
 
 export default class DetailPage extends React.Component {
   static navigationOptions = {
@@ -37,24 +26,166 @@ export default class DetailPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tickets: ticket,
       used: '',
+      item: {},
+      quantityTicket: [],
+      description: '',
+      isLoading: true,
+      isNotLogin: false,
+      cannotBuy: false,
     };
   }
 
-  componentDidMount() {
+  getItem = async () => {
     let used = this.props.navigation.getParam('used');
-    this.setState({used: used});
+    let index = this.props.navigation.getParam('index');
+    let data = {};
+    let description = {};
+    await Ticket.database()
+      .ref('shows')
+      .child(index)
+      .on('value', snapshot => {
+        data = snapshot.val();
+        data.ticket.forEach(this.toNumber);
+        this.setState({item: data});
+      });
+    await Ticket.database()
+      .ref('showDescription')
+      .child(index)
+      .on('value', snapshot => {
+        description = snapshot.val();
+        this.setState({description: description.description});
+      });
+    await this.setState({
+      used: used,
+    });
+
+    let quantity = [];
+    quantity = data.ticket.slice();
+    quantity.forEach(this.setQuantity);
+    await this.setState({quantityTicket: quantity});
+  };
+
+  toNumber = (item, index, arr) => {
+    arr[index].quantity = Number(item.quantity);
+  };
+
+  setQuantity = (item, index, arr) => {
+    arr[index].quantity = 0;
+  };
+
+  componentDidMount() {
+    this.getItem();
+    this.setState({isLoading: false});
   }
 
-  renderItem = ({item}) => (
-    <View style={styles.ticketItem}>
-      <View style={{marginLeft: 16}}>
-        <Text style={styles.ticketType}>{item.title}</Text>
-        <Text style={styles.ticketPrice}>{item.price}</Text>
-      </View>
-    </View>
-  );
+  onPressMinusBtn = (quantity, index) => {
+    let items = this.state.quantityTicket;
+    items[index].quantity = quantity - 1;
+    this.setState({quantityTicket: items});
+  };
+
+  onPressPlusBtn = (quantity, index) => {
+    let items = this.state.quantityTicket;
+    items[index].quantity = quantity + 1;
+    this.setState({quantityTicket: items});
+  };
+
+  _renderTruncatedFooter = handlePress => {
+    return (
+      <Text style={styles.showMoreText} onPress={handlePress}>
+        Xem thêm
+      </Text>
+    );
+  };
+
+  _renderRevealedFooter = handlePress => {
+    return (
+      <Text style={styles.showMoreText} onPress={handlePress}>
+        Thu gọn
+      </Text>
+    );
+  };
+
+  _handleTextReady = () => {
+    // ...
+  };
+
+  checkQuantity = (item, index) => {
+    return (
+      item.quantity <= 0
+      // && item.quantity < this.state.item.ticket[index].quantity
+    );
+  };
+
+  onPressBookBtn = () => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        if (!this.state.quantityTicket.every(this.checkQuantity))
+          this.props.navigation.navigate('Booking', {
+            ticketQuantity: this.state.quantityTicket,
+          });
+        else this.setState({cannotBuy: true});
+      } else this.setState({isNotLogin: true});
+    });
+  };
+
+  renderItem = ({item, index}) => {
+    if (item.type !== '')
+      return (
+        <View style={styles.ticketItem}>
+          <View style={{flex: 2}}>
+            <Text style={styles.ticketType}>{item.type}</Text>
+            <Text style={styles.ticketPrice}>{item.price}</Text>
+          </View>
+          <View style={styles.quantityBtn}>
+            <TouchableOpacity
+              onPress={() => this.onPressMinusBtn(item.quantity, index)}
+              disabled={item.quantity <= 0}
+              style={[
+                styles.btnContainer,
+                {
+                  borderColor:
+                    item.quantity > 0 ? Color.primaryColor : Color.gray,
+                  marginRight: 16,
+                },
+              ]}>
+              <Icon
+                style={[
+                  styles.iconStyle,
+                  {color: item.quantity > 0 ? Color.primaryColor : Color.gray},
+                ]}
+                name="minus"
+                type="AntDesign"
+              />
+            </TouchableOpacity>
+            <View style={styles.quantityContainer}>
+              <Text style={styles.ticketType}>{item.quantity}</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => this.onPressPlusBtn(item.quantity, index)}
+              disabled={item.quantity >= 2}
+              style={[
+                styles.btnContainer,
+                {
+                  borderColor:
+                    item.quantity < 2 ? Color.primaryColor : Color.gray,
+                  marginLeft: 16,
+                },
+              ]}>
+              <Icon
+                style={[
+                  styles.iconStyle,
+                  {color: item.quantity < 2 ? Color.primaryColor : Color.gray},
+                ]}
+                name="plus"
+                type="AntDesign"
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+  };
 
   render() {
     return (
@@ -65,68 +196,94 @@ export default class DetailPage extends React.Component {
           onPressBtnLeft={() => this.props.navigation.navigate(this.state.used)}
         />
         <ScrollView contentContainerStyle={styles.mainViewStyle}>
-          <Image
-            source={require('../../assets/img/music-laser.png')}
-            resizeMode="stretch"
+          <CustomModal
+            isModalVisible={this.state.isNotLogin}
+            isSuccess={false}
+            text="Bạn chưa đăng nhập. Vui lòng nhấn nút đăng nhập và quay lại đặt vé sau."
+            btnText="Đăng nhập"
+            onPressBtn={() => {
+              this.setState({isNotLogin: false});
+              this.props.navigation.navigate('Profile');
+            }}
           />
-          <View style={styles.contanier}>
-            <View style={styles.nameContainer}>
-              <Text style={styles.showName}>Music Laser Show</Text>
-              <StarRating
-                disabled={true}
-                maxStars={5}
-                rating={4}
-                fullStarColor={Color.starColor}
-                emptyStarColor={Color.starColor}
-                starSize={18}
-                containerStyle={styles.nameContainer}
-                starStyle={{paddingRight: 5}}
+          <CustomModal
+            isModalVisible={this.state.cannotBuy}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra trong quá trình mua vé. Vé có thể đã hết hoặc bạn chưa chọn vé cần mua. Nhấn quay lại để trở về."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({cannotBuy: false})}
+          />
+          {this.state.isLoading ? (
+            <Spinner color={Color.primaryColor} />
+          ) : (
+            <View style={{width: SCREEN_WIDTH}}>
+              <Image
+                source={{uri: this.state.item.card}}
+                style={{width: '100%', height: 250}}
+                resizeMode="stretch"
               />
+              <View style={styles.nameContainer}>
+                <Text style={styles.showName}>{this.state.item.title}</Text>
+                <StarRating
+                  disabled={true}
+                  maxStars={5}
+                  rating={Number(this.state.item.rating)}
+                  fullStarColor={Color.starColor}
+                  emptyStarColor={Color.starColor}
+                  starSize={18}
+                  containerStyle={{justifyContent: 'flex-start'}}
+                  starStyle={{paddingRight: 5}}
+                />
+                <Text style={styles.fromText}>
+                  Từ{' '}
+                  <Text style={styles.fromPriceText}>
+                    {this.state.item.priceFrom}
+                  </Text>
+                </Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Icon
+                  name="location-on"
+                  type="MaterialIcons"
+                  style={{fontSize: 14}}
+                />
+                <Text style={styles.infoText}>{this.state.item.address}</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Icon
+                  name="date-range"
+                  type="MaterialIcons"
+                  style={{fontSize: 14}}
+                />
+                <Text style={styles.infoText}>{this.state.item.date}</Text>
+              </View>
+              <View style={{margin: 16}}>
+                <Text style={styles.sectionText}>Giới thiệu</Text>
+                <ReadMore
+                  numberOfLines={5}
+                  renderTruncatedFooter={this._renderTruncatedFooter}
+                  renderRevealedFooter={this._renderRevealedFooter}
+                  onReady={this._handleTextReady}>
+                  <Text style={styles.introText}>{this.state.description}</Text>
+                </ReadMore>
+                <Text style={styles.sectionText}>Giá vé</Text>
+                <FlatList
+                  data={this.state.quantityTicket}
+                  renderItem={this.renderItem}
+                  extraData={this.state}
+                  keyExtractor={item => item.type}
+                />
+                <Button
+                  rounded
+                  style={styles.bookBtn}
+                  onPress={() => this.onPressBookBtn()}>
+                  <Text style={styles.bookText} uppercase={false}>
+                    Đặt vé
+                  </Text>
+                </Button>
+              </View>
             </View>
-            <View style={styles.fromContainer}>
-              <Text style={styles.fromText}>Từ</Text>
-              <Text style={styles.fromPriceText}>$19.99</Text>
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <Icon
-              name="location-on"
-              type="MaterialIcons"
-              style={{fontSize: 14}}
-            />
-            <Text style={styles.infoText}>Nhà hát Hòa Bình - Quận 10</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Icon
-              name="date-range"
-              type="MaterialIcons"
-              style={{fontSize: 14}}
-            />
-            <Text style={styles.infoText}>15/10/2019 - 19:00</Text>
-          </View>
-          <View style={{margin: 16}}>
-            <Text style={styles.sectionText}>Giới thiệu</Text>
-            <Text style={styles.introText}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Vestibulum tristique sed nisl ac imperdiet. Ut hendrerit nulla ut
-              felis rhoncus mattis. Aliquam erat volutpat.
-            </Text>
-            <Text style={styles.sectionText}>Giá vé</Text>
-            <FlatList
-              data={this.state.tickets}
-              renderItem={this.renderItem}
-              extraData={this.state}
-              keyExtractor={item => item.title}
-            />
-            <Button
-              rounded
-              style={styles.bookBtn}
-              onPress={() => this.props.navigation.navigate('Booking')}>
-              <Text style={styles.bookText} uppercase={false}>
-                Đặt vé
-              </Text>
-            </Button>
-          </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     );
@@ -146,7 +303,7 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     justifyContent: 'flex-start',
-    flex: 4,
+    margin: 16,
   },
   contanier: {
     flexDirection: 'row',
@@ -158,6 +315,11 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Cabin-Regular',
     fontSize: 20,
+  },
+  quantityContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 20,
   },
   ticketPrice: {
     color: Color.gray,
@@ -179,7 +341,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
-
     elevation: 2,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
@@ -197,6 +358,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'black',
     marginLeft: 16,
+    marginRight: 8,
   },
   showName: {
     fontFamily: 'Cabin-Regular',
@@ -234,5 +396,28 @@ const styles = StyleSheet.create({
     fontFamily: 'Cabin-Regular',
     fontSize: 20,
     color: 'white',
+  },
+  iconStyle: {
+    color: Color.primaryColor,
+    fontSize: 22,
+  },
+  quantityBtn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  btnContainer: {
+    borderWidth: 1,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  showMoreText: {
+    color: Color.primaryColor,
+    marginTop: 10,
+    marginBottom: 10,
+    fontFamily: 'Cabin-Regular',
+    fontSize: 14,
   },
 });

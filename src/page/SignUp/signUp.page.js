@@ -1,17 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  Body,
-  Header,
-  Left,
-  Right,
-  Title,
-  Button,
-  Text,
-  Form,
-  Input,
-  Item,
-  Label,
-} from 'native-base';
+import {Button, Text, Form, Input, Item, Label} from 'native-base';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color.js';
@@ -19,6 +7,9 @@ import {Image, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import CustomHeader from '../../shared/component/customHeader';
+import firebase from 'firebase';
+import CustomModal from '../../shared/component/customModal';
+import {LoginManager, AccessToken} from 'react-native-fbsdk';
 
 export default class SignUpPage extends React.Component {
   static navigationOptions = {
@@ -27,15 +18,18 @@ export default class SignUpPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      isSignUpSuccess: true,
+      isHaveAccount: false,
+    };
   }
 
   validationSchema = yup.object().shape({
-    username: yup
+    email: yup
       .string()
-      .required('* Vui lòng nhập tên đăng nhập')
-      .matches(/^[a-zA-Z0-9]+([_ -]?[a-zA-Z0-9])*$/, {
-        message: 'Tên đăng nhập không hợp lệ',
-      }),
+      .label('Email')
+      .email('Email hiện tại không hợp lệ')
+      .required('* Vui lòng nhập email'),
     password: yup
       .string()
       .required('* Vui lòng nhập mật khẩu')
@@ -44,6 +38,7 @@ export default class SignUpPage extends React.Component {
       }),
     fullname: yup
       .string()
+      .trim()
       .required('* Vui lòng nhập họ và tên')
       .matches(
         /[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/u,
@@ -53,6 +48,68 @@ export default class SignUpPage extends React.Component {
       ),
   });
 
+  handleSignUp = values => {
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(values.email, values.password)
+      .then(response => {
+        firebase
+          .auth()
+          .currentUser.updateProfile({
+            displayName: values.fullname,
+          })
+          .then(() => {
+            firebase
+              .database()
+              .ref('users/' + firebase.auth().currentUser.uid + '/profile')
+              .set({
+                fullname: values.fullname,
+                email: values.email,
+              });
+            this.props.navigation.navigate('Profile');
+          })
+          .catch(error => {});
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use')
+          this.setState({isHaveAccount: true});
+      });
+  };
+
+  initUser = token => {
+    fetch(
+      'https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' +
+        token,
+    )
+      .then(response => response.json())
+      .then(json => {
+        const values = {
+          fullname: json.name,
+          email: json.email,
+          password: '12345678',
+        };
+        this.handleSignUp(values);
+      })
+      .catch(() => {
+        reject('ERROR GETTING DATA FROM FACEBOOK');
+      });
+  };
+
+  handleFacebookLogin = () => {
+    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
+      value => {
+        if (value.isCancelled) {
+          console.log('Login cancelled');
+        } else {
+          AccessToken.getCurrentAccessToken().then(data => {
+            const {accessToken} = data;
+            this.initUser(accessToken);
+          });
+        }
+      },
+    );
+  };
+
   render() {
     return (
       <View>
@@ -60,10 +117,17 @@ export default class SignUpPage extends React.Component {
           <CustomHeader title="Đăng ký" isLeftBtnVisible={false} />
         </View>
         <ScrollView style={styles.mainViewStyle}>
+          <CustomModal
+            isModalVisible={this.state.isHaveAccount}
+            isSuccess={false}
+            text="Bạn đã có tài khoản. Vui lòng nhấn nút đăng nhập."
+            btnText="Đăng nhập"
+            onPressBtn={() => this.props.navigation.navigate('Login')}
+          />
           <Formik
-            initialValues={{username: '', password: '', fullname: ''}}
+            initialValues={{email: '', password: '', fullname: ''}}
             validationSchema={this.validationSchema}
-            onSubmit={values => this.props.navigation.navigate('Login')}>
+            onSubmit={values => this.handleSignUp(values)}>
             {({
               handleChange,
               handleBlur,
@@ -76,7 +140,7 @@ export default class SignUpPage extends React.Component {
             }) => {
               return (
                 <View>
-                  <Form style={{marginRight:16}}>
+                  <Form style={{marginRight: 16}}>
                     <Item floatingLabel>
                       <Label style={styles.input}>Họ và tên</Label>
                       <Input
@@ -92,18 +156,18 @@ export default class SignUpPage extends React.Component {
                       <Text style={styles.errorText}>{errors.fullname}</Text>
                     )}
                     <Item floatingLabel>
-                      <Label style={styles.input}>Tên đăng nhập</Label>
+                      <Label style={styles.input}>Email</Label>
                       <Input
-                        placeholder="Tên đăng nhập"
+                        placeholder="Email"
                         style={styles.input}
-                        onTouchStart={() => setFieldTouched('username')}
-                        onChangeText={handleChange('username')}
-                        onBlur={handleBlur('username')}
-                        value={values.username}
+                        onTouchStart={() => setFieldTouched('email')}
+                        onChangeText={handleChange('email')}
+                        onBlur={handleBlur('email')}
+                        value={values.email}
                       />
                     </Item>
-                    {touched.username && errors.username && (
-                      <Text style={styles.errorText}>{errors.username}</Text>
+                    {touched.email && errors.email && (
+                      <Text style={styles.errorText}>{errors.email}</Text>
                     )}
                     <Item floatingLabel>
                       <Label style={styles.input}>Mật khẩu</Label>
@@ -164,7 +228,8 @@ export default class SignUpPage extends React.Component {
                           style={{width: 92, height: 64}}
                         />
                       </TouchableOpacity>
-                      <TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => this.handleFacebookLogin()}>
                         <Image
                           source={require('../../assets/img/Facebook.png')}
                           style={{width: 92, height: 64}}

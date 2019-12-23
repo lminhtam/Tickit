@@ -8,12 +8,23 @@ import {
   Segment,
   Text,
   Title,
+  Spinner,
 } from 'native-base';
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import Color from '../../shared/Color.js';
-import ListForYou from './components/listForYou.js';
-import ListTrending from './components/listTrending.js';
+import {FlatList} from 'react-native-gesture-handler';
+import ShowItem from './components/showItem';
+import ShowRecommendItem from './components/showRecommendItem';
+import Ticket from '../../../firebaseConfig';
+import {checkCategory} from '../../shared/ultility';
+import Carousel from 'react-native-snap-carousel';
+import {itemWidth, sliderWidth} from '../../shared/ultility';
 
 export default class HomePage extends React.Component {
   static navigationOptions = {
@@ -23,30 +34,114 @@ export default class HomePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: true,
+      shows: [],
+      activeCategory: 0,
+      filter: 'Tất cả',
       category: [
         {
+          id: 0,
+          title: 'Tất cả',
+          status: true,
+        },
+        {
           id: 1,
-          title: 'Âm nhạc',
+          title: 'Giải trí',
+          status: false,
         },
         {
           id: 2,
-          title: 'Workshop',
+          title: 'Khóa học',
+          status: false,
         },
         {
           id: 3,
-          title: 'Hài kịch',
+          title: 'Sự kiện khác',
+          status: false,
         },
       ],
     };
   }
 
-  _itemChoose(item) {
-    alert(item.title);
+  readUserData = async () => {
+    let data = [];
+    await Ticket.database()
+      .ref()
+      .child('shows')
+      .once('value', snapshot => {
+        data = snapshot.val();
+      });
+    await this.setState({shows: data, isLoading: false});
+  };
+
+  componentDidMount() {
+    this.readUserData();
   }
 
-  render() {
+  onPressCategory = index => {
+    let category = this.state.category;
+    category[this.state.activeCategory].status = false;
+    category[index].status = true;
+    this.setState({
+      activeCategory: index,
+      category: category,
+      filter: category[index].title,
+    });
+  };
+
+  renderCategory = ({item, index}) => (
+    <TouchableWithoutFeedback onPress={() => this.onPressCategory(index)}>
+      <View
+        style={[
+          styles.segmentBtn,
+          {
+            backgroundColor: item.status ? Color.inactiveColor : null,
+          },
+        ]}>
+        <Text uppercase={false} style={styles.segmentText}>
+          {item.title}
+        </Text>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+
+  renderItem = ({item}) => {
+    const index = this.state.shows.indexOf(item);
     return (
-      <View>
+      <ShowItem
+        item={item}
+        onPressItem={() => {
+          this.props.navigation.navigate('Detail', {
+            used: 'Home',
+            index: index,
+          });
+        }}
+      />
+    );
+  };
+
+  renderRecommendItem = ({item}) => {
+    const index = this.state.shows.indexOf(item);
+    return (
+      <ShowRecommendItem
+        item={item}
+        onPressItem={() => {
+          this.props.navigation.navigate('Detail', {
+            used: 'Home',
+            index: index,
+          });
+        }}
+      />
+    );
+  };
+
+  render() {
+    const data = this.state.shows.filter(value =>
+      checkCategory(value, this.state.filter),
+    );
+    const sortData = data.filter(value => value.rating === '5').slice(0, 5);
+    return (
+      <View style={{marginBottom: 20}}>
         <View>
           <Header
             hasSegment
@@ -60,35 +155,59 @@ export default class HomePage extends React.Component {
             <Right style={{flex: 0.2}} />
           </Header>
           <Segment style={styles.segmentStyle}>
-            <Button rounded active={true} style={styles.segmentBtn}>
-              <Text uppercase={false} style={styles.segmentText}>
-                Âm nhạc
-              </Text>
-            </Button>
-            <Button rounded active={true} style={styles.segmentBtn}>
-              <Text uppercase={false} style={styles.segmentText}>
-                Workshop
-              </Text>
-            </Button>
-            <Button rounded active={true} style={styles.segmentBtn}>
-              <Text uppercase={false} style={styles.segmentText}>
-                Hài kịch
-              </Text>
-            </Button>
+            <FlatList
+              style={{marginLeft: 16, marginRight: 16}}
+              data={this.state.category}
+              renderItem={this.renderCategory}
+              extraData={this.state}
+              keyExtractor={item => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
           </Segment>
         </View>
-        <ScrollView style={styles.mainViewStyle}>
-          <ListForYou
-            onPressItem={() =>
-              this.props.navigation.navigate('Detail', {used: 'Home'})
-            }
-          />
-          <ListTrending
-            onPressItem={() =>
-              this.props.navigation.navigate('Detail', {used: 'Home'})
-            }
-          />
-        </ScrollView>
+        {this.state.isLoading || !this.state.shows ? (
+          <Spinner color={Color.primaryColor} />
+        ) : (
+          <ScrollView style={styles.mainViewStyle}>
+            <View>
+              <Text style={styles.titleTextStyle}>Dành riêng cho bạn</Text>
+              {data && data.length > 0 ? (
+                <Carousel
+                  ref={c => {
+                    this._carousel = c;
+                  }}
+                  data={sortData}
+                  renderItem={this.renderRecommendItem}
+                  layout={'stack'}
+                  layoutCardOffset={'18'}
+                  sliderWidth={sliderWidth}
+                  itemWidth={itemWidth}
+                />
+              ) : (
+                <Text style={styles.errorText}>
+                  Hiện chưa có đề xuất phù hợp với bạn.
+                </Text>
+              )}
+            </View>
+            <View>
+              <Text style={styles.titleTextStyle}>Phổ biến</Text>
+              {data && data.length > 0 ? (
+                <FlatList
+                  data={data}
+                  renderItem={this.renderItem}
+                  extraData={this.state}
+                  keyExtractor={item => item.title}
+                  initialNumToRender={10}
+                />
+              ) : (
+                <Text style={styles.errorText}>
+                  Không tìm thấy kết quả phù hợp.
+                </Text>
+              )}
+            </View>
+          </ScrollView>
+        )}
       </View>
     );
   }
@@ -100,10 +219,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   segmentBtn: {
-    backgroundColor: Color.inactiveColor,
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     borderWidth: 0,
-    borderColor: Color.primaryColor,
+    borderRadius: 50,
+    margin: 8,
+    padding: 8,
   },
   segmentText: {
     color: 'white',
@@ -117,6 +237,19 @@ const styles = StyleSheet.create({
   },
   mainViewStyle: {
     backgroundColor: 'white',
-    marginBottom: 60,
+    marginBottom: 80,
+  },
+  titleTextStyle: {
+    color: Color.primaryColor,
+    fontFamily: 'Cabin-SemiBold',
+    fontSize: 20,
+    margin: 16,
+  },
+  errorText: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 16,
+    color: Color.gray,
+    marginLeft: 16,
+    marginRight: 16,
   },
 });

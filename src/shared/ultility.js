@@ -19,7 +19,7 @@ export const {width: viewportWidth, height: viewportHeight} = Dimensions.get(
   'window',
 );
 
-function wp (percentage) {
+function wp(percentage) {
   const value = (percentage * viewportWidth) / 100;
   return Math.round(value);
 }
@@ -43,8 +43,10 @@ export function isIphoneX() {
     Platform.OS === 'ios' &&
     (dimen.height === 812 ||
       dimen.width === 812 ||
-      dimen.height === 896 || dimen.width === 896 ||
-      dimen.height === 828 || dimen.width === 828)
+      dimen.height === 896 ||
+      dimen.width === 896 ||
+      dimen.height === 828 ||
+      dimen.width === 828)
   );
 }
 
@@ -53,4 +55,27 @@ export const ifIphoneX = () => {
     return true;
   }
   return false;
+};
+
+export const checkCategory = (value, filter) => {
+  if (filter === 'Tất cả') {
+    return true;
+  } else if (filter === 'Giải trí') {
+    return (
+      value.category === 'Văn hóa nghệ thuật' ||
+      value.category === 'Nhạc sống' ||
+      value.category === 'Vui chơi giải trí'
+    );
+  } else if (filter === 'Khóa học') {
+    return (
+      value.category === 'Hội họp' ||
+      value.category === 'Hội thảo' ||
+      value.category === 'Khóa học'
+    );
+  } else
+    return (
+      value.category === 'Thể thao' ||
+      value.category === 'Nightlife' ||
+      value.category === 'Hội chợ'
+    );
 };

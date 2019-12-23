@@ -12,6 +12,7 @@ import {
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import {SCREEN_WIDTH} from '../../shared/ultility.js';
+import firebase from 'firebase';
 
 const list = [
   {
@@ -43,7 +44,27 @@ export default class ProfilePage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      fullname: '',
+      email: '',
+    };
   }
+
+  componentDidMount() {
+    this.setState({
+      fullname: firebase.auth().currentUser.displayName,
+      email: firebase.auth().currentUser.email,
+    });
+  }
+
+  signOutUser = async () => {
+    try {
+      await firebase.auth().signOut();
+      this.props.navigation.navigate('Loading');
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   renderItem = ({item}) => {
     const navigation = item.navigation;
@@ -79,8 +100,8 @@ export default class ProfilePage extends React.Component {
               resizeMode="stretch"
             />
             <View style={{marginLeft: 16}}>
-              <Text style={styles.name}>Matilda Brown</Text>
-              <Text style={styles.email}>matildabrown@mail.com</Text>
+              <Text style={styles.name}>{this.state.fullname}</Text>
+              <Text style={styles.email}>{this.state.email}</Text>
             </View>
           </View>
           <FlatList
@@ -91,7 +112,7 @@ export default class ProfilePage extends React.Component {
           <Button
             rounded
             style={styles.logOutBtn}
-            onPress={() => this.props.navigation.navigate('Login')}>
+            onPress={() => this.signOutUser()}>
             <Text style={styles.logOutText} uppercase={false}>
               Đăng xuất
             </Text>

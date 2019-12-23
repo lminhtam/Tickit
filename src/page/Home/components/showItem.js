@@ -10,14 +10,18 @@ export default class ShowItem extends React.Component {
       <TouchableOpacity onPress={this.props.onPressItem}>
         <View style={styles.showItem}>
           <Image
-            source={require('../../../assets/img/talent-show-poster.png')}
+            source={{uri: this.props.item.card}}
+            resizeMode="cover"
+            style={{width: '100%', height: '50%'}}
           />
-          <View style={{marginLeft: 16}}>
+          <View style={{width: '100%'}}>
             <Text style={styles.showName}>{this.props.item.title}</Text>
             <Text style={styles.descriptionText}>
               {this.props.item.category}
             </Text>
-            <Text style={styles.dateText}>{this.props.item.date}</Text>
+            <Text style={styles.dateText}>
+              {this.props.item.dateNum} {this.props.item.dateMonth}
+            </Text>
             <Button rounded small style={styles.btnStyle}>
               <Text uppercase={false} style={styles.btnText}>
                 Đặt vé
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
   },
   showItem: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     padding: 16,
     margin: 16,
     alignItems: 'center',
@@ -73,5 +77,8 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
+    maxHeight: 400,
+    minHeight: 280,
+    height: '100%'
   },
 });

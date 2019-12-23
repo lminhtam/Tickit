@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Tickit</string>
-    <string name="facebook_app_id">439366766746179</string>
+    <string name="facebook_app_id">439366766746179</string> <string name="fb_login_protocol_scheme">fb439366766746179</string>
 </resources>
