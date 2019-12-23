@@ -7,6 +7,8 @@ import CustomHeader from '../../shared/component/customHeader';
 import {SCREEN_WIDTH} from '../../shared/ultility';
 import {Formik} from 'formik';
 import * as yup from 'yup';
+import firebase from 'firebase';
+import {ThemeProvider} from 'react-native-elements';
 
 export default class BookingPage extends React.Component {
   static navigationOptions = {
@@ -15,6 +17,18 @@ export default class BookingPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      email: '',
+      fullname: '',
+    };
+  }
+
+  componentDidMount() {
+    firebase
+      .auth()
+      .onAuthStateChanged(async user =>
+        await this.setState({email: user.email, fullname: user.displayName}),
+      );
   }
 
   validationSchema = yup.object().shape({
@@ -30,7 +44,8 @@ export default class BookingPage extends React.Component {
         message: 'Số điện thoại không hợp lệ',
       }),
     fullname: yup
-      .string().trim()
+      .string()
+      .trim()
       .required('* Vui lòng nhập họ và tên')
       .matches(
         /[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]/u,
@@ -58,7 +73,12 @@ export default class BookingPage extends React.Component {
           style={{backgroundColor: 'white'}}
           contentContainerStyle={styles.mainViewStyle}>
           <Formik
-            initialValues={{fullname: '', phoneNumber: '', email: '', id: ''}}
+            initialValues={{
+              fullname: this.state.fullname,
+              phoneNumber: '',
+              email: this.state.email,
+              id: '',
+            }}
             validationSchema={this.validationSchema}
             onSubmit={values => {
               console.log(values);

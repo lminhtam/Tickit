@@ -16,6 +16,7 @@ import TicketDetailPage from '../page/TicketDetail/ticketDetail.page';
 import ForgotPasswordPage from '../page/ForgotPassword/forgotPassword.page';
 import ProfilePage from '../page/Profile/profile.page';
 import BookedTicketPage from '../page/BookedTicket/bookedTicket.page';
+import LoadingPage from '../page/Loading/loading.page';
 
 const BookingStack = createStackNavigator(
   {
@@ -87,6 +88,7 @@ const ProfileStack = createStackNavigator(
 
 const ProfileSwitch = createSwitchNavigator(
   {
+    Loading: LoadingPage,
     Login: LoginStack,
     SignUp: SignUpPage,
     Profile: ProfileStack,
@@ -103,7 +105,7 @@ const ProfileSwitch = createSwitchNavigator(
         />
       ),
     },
-    initialRouteName: 'Login',
+    initialRouteName: 'Loading',
   },
 );
 

@@ -11,15 +11,19 @@ export default class ShowItem extends React.Component {
         <View style={styles.showItem}>
           <Image
             source={{uri: this.props.item.card}}
-            style={{width: 100, height: 200}}
-            resizeMode='stretch'
+            resizeMode="cover"
+            style={{width: '100%', height: '40%'}}
           />
-          <View style={{marginLeft: 16, flex: 1}}>
-            <Text style={styles.showName}>{this.props.item.title}</Text>
+          <View style={{width: '100%'}}>
+            <Text numberOfLines={2} style={styles.showName}>
+              {this.props.item.title}
+            </Text>
             <Text style={styles.descriptionText}>
               {this.props.item.category}
             </Text>
-            <Text style={styles.dateText}>{this.props.item.datemonth1}</Text>
+            <Text style={styles.dateText}>
+              {this.props.item.dateNum} {this.props.item.dateMonth}
+            </Text>
             <Button rounded small style={styles.btnStyle}>
               <Text uppercase={false} style={styles.btnText}>
                 Đặt vé
@@ -60,7 +64,7 @@ const styles = StyleSheet.create({
   },
   showItem: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     padding: 16,
     margin: 16,
     alignItems: 'center',
@@ -75,5 +79,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 5,
     width: SCREEN_WIDTH - 32,
+    height: 260,
   },
 });

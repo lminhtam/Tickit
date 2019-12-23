@@ -1,17 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  Body,
-  Header,
-  Left,
-  Right,
-  Title,
-  Button,
-  Text,
-  Form,
-  Input,
-  Item,
-  Label,
-} from 'native-base';
+import {Button, Text, Form, Input, Item, Label} from 'native-base';
 import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color.js';
@@ -19,6 +7,9 @@ import {Image, TouchableOpacity} from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import CustomHeader from '../../shared/component/customHeader';
+import {LoginManager, AccessToken} from 'react-native-fbsdk';
+import firebase from 'firebase';
+import CustomModal from '../../shared/component/customModal';
 
 export default class LoginPage extends React.Component {
   static navigationOptions = {
@@ -27,15 +18,18 @@ export default class LoginPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      isWrongPassword: false,
+      isNotHaveAccount: false,
+    };
   }
 
   validationSchema = yup.object().shape({
-    username: yup
+    email: yup
       .string()
-      .required('* Vui lòng nhập tên đăng nhập')
-      .matches(/^[a-zA-Z0-9]+([_\s\-]?[a-zA-Z0-9])*$/, {
-        message: 'Tên đăng nhập không hợp lệ',
-      }),
+      .label('Email')
+      .email('Email hiện tại không hợp lệ')
+      .required('* Vui lòng nhập email'),
     password: yup
       .string()
       .required('* Vui lòng nhập mật khẩu')
@@ -44,6 +38,54 @@ export default class LoginPage extends React.Component {
       }),
   });
 
+  initUser = token => {
+    fetch(
+      'https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' +
+        token,
+    )
+      .then(response => response.json())
+      .then(json => {
+        // Some user object has been set up somewhere, build that user here
+        console.log(json);
+        this.props.navigation.navigate('Profile');
+      })
+      .catch(() => {
+        reject('ERROR GETTING DATA FROM FACEBOOK');
+      });
+  };
+
+  handleFacebookLogin = () => {
+    LoginManager.logInWithPermissions(['public_profile', 'email']).then(
+      value => {
+        if (value.isCancelled) {
+          console.log('Login cancelled');
+        } else {
+          console.log(
+            'Login success with permissions: ' +
+              value.grantedPermissions.toString(),
+          );
+          AccessToken.getCurrentAccessToken().then(data => {
+            const {accessToken} = data;
+            this.initUser(accessToken);
+          });
+        }
+      },
+    );
+  };
+
+  handleLogin = values => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(values.email, values.password)
+      .then(() => this.props.navigation.navigate('Profile'))
+      .catch(error => {
+        if (error.code === 'auth/user-not-found')
+          this.setState({isNotHaveAccount: true});
+        else if (error.code === 'auth/wrong-password')
+          this.setState({isWrongPassword: true});
+      });
+  };
+
   render() {
     return (
       <View>
@@ -51,10 +93,24 @@ export default class LoginPage extends React.Component {
           <CustomHeader title="Đăng nhập" isLeftBtnVisible={false} />
         </View>
         <ScrollView style={styles.mainViewStyle}>
+          <CustomModal
+            isModalVisible={this.state.isNotHaveAccount}
+            isSuccess={false}
+            text="Bạn chưa có tài khoản. Vui lòng nhấn nút đăng ký."
+            btnText="Đăng ký"
+            onPressBtn={() => this.props.navigation.navigate('SignUp')}
+          />
+          <CustomModal
+            isModalVisible={this.state.isWrongPassword}
+            isSuccess={false}
+            text="Bạn vừa nhập sai mật khẩu. Nhấn nút quay lại để nhập lại mật khẩu."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isWrongPassword: false})}
+          />
           <Formik
-            initialValues={{username: '', password: ''}}
+            initialValues={{email: '', password: ''}}
             validationSchema={this.validationSchema}
-            onSubmit={values => this.props.navigation.navigate('Profile')}>
+            onSubmit={values => this.handleLogin(values)}>
             {({
               handleChange,
               handleBlur,
@@ -70,18 +126,18 @@ export default class LoginPage extends React.Component {
                   <View>
                     <Form style={{marginRight: 16}}>
                       <Item floatingLabel>
-                        <Label style={styles.input}>Tên đăng nhập</Label>
+                        <Label style={styles.input}>Email</Label>
                         <Input
-                          placeholder="Tên đăng nhập"
+                          placeholder="Email"
                           style={styles.input}
-                          onTouchStart={() => setFieldTouched('username')}
-                          onChangeText={handleChange('username')}
-                          onBlur={handleBlur('username')}
-                          value={values.username}
+                          onTouchStart={() => setFieldTouched('email')}
+                          onChangeText={handleChange('email')}
+                          onBlur={handleBlur('email')}
+                          value={values.email}
                         />
                       </Item>
-                      {touched.username && errors.username && (
-                        <Text style={styles.errorText}>{errors.username}</Text>
+                      {touched.email && errors.email && (
+                        <Text style={styles.errorText}>{errors.email}</Text>
                       )}
                       <Item floatingLabel>
                         <Label style={styles.input}>Mật khẩu</Label>
@@ -152,7 +208,8 @@ export default class LoginPage extends React.Component {
                           style={{width: 92, height: 64}}
                         />
                       </TouchableOpacity>
-                      <TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => this.handleFacebookLogin()}>
                         <Image
                           source={require('../../assets/img/Facebook.png')}
                           style={{width: 92, height: 64}}
