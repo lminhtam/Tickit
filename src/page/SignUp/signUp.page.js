@@ -48,27 +48,31 @@ export default class SignUpPage extends React.Component {
       ),
   });
 
+  setDatabase = fullname => {
+    firebase
+      .auth()
+      .currentUser.updateProfile({
+        displayName: fullname,
+      })
+      .then(() => {
+        firebase
+          .database()
+          .ref('users/' + firebase.auth().currentUser.uid + '/profile')
+          .set({
+            fullname: firebase.auth().currentUser.displayName,
+            email: firebase.auth().currentUser.email,
+          });
+        this.props.navigation.navigate('Profile');
+      })
+      .catch(error => {});
+  };
+
   handleSignUp = values => {
     firebase
       .auth()
       .createUserWithEmailAndPassword(values.email, values.password)
       .then(response => {
-        firebase
-          .auth()
-          .currentUser.updateProfile({
-            displayName: values.fullname,
-          })
-          .then(() => {
-            firebase
-              .database()
-              .ref('users/' + firebase.auth().currentUser.uid + '/profile')
-              .set({
-                fullname: values.fullname,
-                email: values.email,
-              });
-            this.props.navigation.navigate('Profile');
-          })
-          .catch(error => {});
+        this.setDatabase(values.fullname);
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use')
@@ -82,14 +86,7 @@ export default class SignUpPage extends React.Component {
         token,
     )
       .then(response => response.json())
-      .then(json => {
-        const values = {
-          fullname: json.name,
-          email: json.email,
-          password: '12345678',
-        };
-        this.handleSignUp(values);
-      })
+      .then(json => this.setDatabase(json.name))
       .catch(() => {
         reject('ERROR GETTING DATA FROM FACEBOOK');
       });
@@ -102,8 +99,19 @@ export default class SignUpPage extends React.Component {
           console.log('Login cancelled');
         } else {
           AccessToken.getCurrentAccessToken().then(data => {
-            const {accessToken} = data;
-            this.initUser(accessToken);
+            const credential = firebase.auth.FacebookAuthProvider.credential(
+              data.accessToken,
+            );
+            firebase
+              .auth()
+              .signInWithCredential(credential)
+              .then(() => this.initUser(data.accessToken))
+              .catch(error => {
+                if (
+                  error.code === 'auth/account-exists-with-different-credential'
+                )
+                  this.setState({isHaveAccount: true});
+              });
           });
         }
       },
@@ -112,7 +120,7 @@ export default class SignUpPage extends React.Component {
 
   render() {
     return (
-      <View>
+      <View style={{backgroundColor: 'white'}}>
         <View>
           <CustomHeader title="Đăng ký" isLeftBtnVisible={false} />
         </View>
@@ -122,7 +130,10 @@ export default class SignUpPage extends React.Component {
             isSuccess={false}
             text="Bạn đã có tài khoản. Vui lòng nhấn nút đăng nhập."
             btnText="Đăng nhập"
-            onPressBtn={() => this.props.navigation.navigate('Login')}
+            onPressBtn={() => {
+              this.setState({isHaveAccount: false});
+              this.props.navigation.navigate('Login');
+            }}
           />
           <Formik
             initialValues={{email: '', password: '', fullname: ''}}

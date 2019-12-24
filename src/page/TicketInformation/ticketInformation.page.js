@@ -1,8 +1,16 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View, Image} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Image,
+  FlatList,
+} from 'react-native';
 import {Text, Button, Icon} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
+import Ticket from '../../../firebaseConfig';
 
 export default class TicketInformationPage extends React.Component {
   static navigationOptions = {
@@ -11,6 +19,43 @@ export default class TicketInformationPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      item: {},
+      total: 0,
+      user: this.props.navigation.getParam('user'),
+      quantityTicket: [],
+    };
+  }
+
+  getItem = async () => {
+    let index = this.props.navigation.getParam('itemIndex');
+    let data = {};
+    await Ticket.database()
+      .ref('shows')
+      .child(index)
+      .on('value', snapshot => {
+        data = snapshot.val();
+        this.setState({item: data});
+      });
+
+    let quantity = this.props.navigation.getParam('quantityTicket');
+    await this.setState({quantityTicket: quantity});
+    quantity.forEach((item, index, arr) => {
+      let tmp = item.price.replace(' VND', '');
+      // console.log(tmp)
+      tmp = tmp.replace(/./g, '');
+      // console.log(tmp)
+      arr[index].price = Number(tmp);
+    });
+    // console.log(quantity);
+    var total = 0;
+    for (let i = 0; i < quantity.length; i++)
+      total += quantity[i].price * quantity[i].quantity;
+    await this.setState({total: total});
+  };
+
+  componentDidMount() {
+    this.getItem();
   }
 
   render() {
@@ -25,19 +70,19 @@ export default class TicketInformationPage extends React.Component {
           <View style={styles.ticketContainer}>
             <View>
               <Image
-                source={require('../../assets/img/music-laser.png')}
+                source={{uri: this.state.item.card}}
                 style={styles.img}
                 resizeMode={'cover'}
               />
             </View>
-            <Text style={styles.showName}>Music Laser Show</Text>
+            <Text style={styles.showName}>{this.state.item.title}</Text>
             <View style={styles.infoContainer}>
               <Icon
                 name="location-on"
                 type="MaterialIcons"
                 style={{fontSize: 14}}
               />
-              <Text style={styles.infoText}>Nhà hát Hòa Bình - Quận 10</Text>
+              <Text style={styles.infoText}>{this.state.item.address}</Text>
             </View>
             <View style={styles.infoContainer}>
               <Icon
@@ -45,16 +90,34 @@ export default class TicketInformationPage extends React.Component {
                 type="MaterialIcons"
                 style={{fontSize: 14}}
               />
-              <Text style={styles.infoText}>15/10/2019 - 19:00</Text>
+              <Text style={styles.infoText}>{this.state.item.date}</Text>
             </View>
             <View style={{flexDirection: 'row'}}>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionText}>Loại:</Text>
-                <Text style={styles.detailText}>SVIP</Text>
+                <FlatList
+                  data={this.state.quantityTicket}
+                  renderItem={({item}) => {
+                    if (item.quantity > 0)
+                      return <Text style={styles.detailText}>{item.type}</Text>;
+                  }}
+                  keyExtractor={item => item.type}
+                  showsVerticalScrollIndicator={false}
+                />
               </View>
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionText}>Số lượng:</Text>
-                <Text style={styles.detailText}>1</Text>
+                <FlatList
+                  data={this.state.quantityTicket}
+                  renderItem={({item}) => {
+                    if (item.quantity > 0)
+                      return (
+                        <Text style={styles.detailText}>{item.quantity}</Text>
+                      );
+                  }}
+                  keyExtractor={item => item.type}
+                  showsVerticalScrollIndicator={false}
+                />
               </View>
             </View>
             <View
@@ -63,16 +126,23 @@ export default class TicketInformationPage extends React.Component {
                 alignItems: 'center',
               }}>
               <Text style={styles.sectionText}>Người đặt vé:</Text>
-              <Text style={styles.detailText}>Steven Black</Text>
+              <Text style={styles.detailText}>{this.state.user.fullname}</Text>
               <Text style={styles.sectionText}>Tổng cộng:</Text>
-              <Text style={styles.priceText}>$39.99</Text>
+              <Text style={styles.priceText}>{this.state.total}</Text>
             </View>
           </View>
           <Button
             rounded
             style={styles.bookBtn}
             onPress={() =>
-              this.props.navigation.navigate('TicketDetail', {used: 'home'})
+              this.props.navigation.navigate('TicketDetail', {
+                used: 'home',
+                itemIndex: this.props.navigation.getParam('itemIndex'),
+                user: this.props.navigation.getParam('user'),
+                quantityTicket: this.props.navigation.getParam(
+                  'quantityTicket',
+                ),
+              })
             }>
             <Text style={styles.bookText} uppercase={false}>
               Thanh toán
@@ -92,6 +162,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 9,
     borderTopRightRadius: 9,
     width: '100%',
+    height: 200,
   },
   sectionContainer: {
     flex: 1,

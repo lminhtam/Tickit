@@ -10,6 +10,7 @@ import CustomHeader from '../../shared/component/customHeader';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import firebase from 'firebase';
 import CustomModal from '../../shared/component/customModal';
+import Ticket from '../../../firebaseConfig';
 
 export default class LoginPage extends React.Component {
   static navigationOptions = {
@@ -21,6 +22,7 @@ export default class LoginPage extends React.Component {
     this.state = {
       isWrongPassword: false,
       isNotHaveAccount: false,
+      isHaveAccount: false,
     };
   }
 
@@ -38,20 +40,16 @@ export default class LoginPage extends React.Component {
       }),
   });
 
-  initUser = token => {
-    fetch(
-      'https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' +
-        token,
-    )
-      .then(response => response.json())
-      .then(json => {
-        // Some user object has been set up somewhere, build that user here
-        console.log(json);
-        this.props.navigation.navigate('Profile');
-      })
-      .catch(() => {
-        reject('ERROR GETTING DATA FROM FACEBOOK');
-      });
+  checkExistUser = async () => {
+    await Ticket.database()
+      .ref('users')
+      .once('value', snapshot => console.log(snapshot.hasChild(firebase.auth().currentUser.uid)));
+    // if (snapshot.hasChild(firebase.auth().currentUser.uid)) {
+    //   this.props.navigation.navigate('Profile');
+    // } else {
+    //   console.log(snapshot);
+    //   this.setState({isNotHaveAccount: true});
+    // }
   };
 
   handleFacebookLogin = () => {
@@ -60,13 +58,20 @@ export default class LoginPage extends React.Component {
         if (value.isCancelled) {
           console.log('Login cancelled');
         } else {
-          console.log(
-            'Login success with permissions: ' +
-              value.grantedPermissions.toString(),
-          );
           AccessToken.getCurrentAccessToken().then(data => {
-            const {accessToken} = data;
-            this.initUser(accessToken);
+            const credential = firebase.auth.FacebookAuthProvider.credential(
+              data.accessToken,
+            );
+            firebase
+              .auth()
+              .signInWithCredential(credential)
+              .then(() => this.checkExistUser())
+              .catch(error => {
+                if (
+                  error.code === 'auth/account-exists-with-different-credential'
+                )
+                  this.setState({isHaveAccount: true});
+              });
           });
         }
       },
@@ -93,6 +98,15 @@ export default class LoginPage extends React.Component {
           <CustomHeader title="Đăng nhập" isLeftBtnVisible={false} />
         </View>
         <ScrollView style={styles.mainViewStyle}>
+          <CustomModal
+            isModalVisible={this.state.isHaveAccount}
+            isSuccess={false}
+            text="Bạn đã có tài khoản đăng ký. Vui lòng nhấn nút quay lại."
+            btnText="Quay lại"
+            onPressBtn={() => {
+              this.setState({isHaveAccount: false});
+            }}
+          />
           <CustomModal
             isModalVisible={this.state.isNotHaveAccount}
             isSuccess={false}

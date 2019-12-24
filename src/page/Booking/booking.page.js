@@ -8,7 +8,6 @@ import {SCREEN_WIDTH} from '../../shared/ultility';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import firebase from 'firebase';
-import {ThemeProvider} from 'react-native-elements';
 
 export default class BookingPage extends React.Component {
   static navigationOptions = {
@@ -17,18 +16,6 @@ export default class BookingPage extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      email: '',
-      fullname: '',
-    };
-  }
-
-  componentDidMount() {
-    firebase
-      .auth()
-      .onAuthStateChanged(async user =>
-        await this.setState({email: user.email, fullname: user.displayName}),
-      );
   }
 
   validationSchema = yup.object().shape({
@@ -74,15 +61,20 @@ export default class BookingPage extends React.Component {
           contentContainerStyle={styles.mainViewStyle}>
           <Formik
             initialValues={{
-              fullname: this.state.fullname,
+              fullname: firebase.auth().currentUser.displayName,
               phoneNumber: '',
-              email: this.state.email,
+              email: firebase.auth().currentUser.email,
               id: '',
             }}
             validationSchema={this.validationSchema}
             onSubmit={values => {
-              console.log(values);
-              this.props.navigation.navigate('TicketInfo');
+              this.props.navigation.navigate('TicketInfo', {
+                user: values,
+                quantityTicket: this.props.navigation.getParam(
+                  'ticketQuantity',
+                ),
+                itemIndex: this.props.navigation.getParam('itemIndex')
+              });
             }}>
             {({
               handleChange,
