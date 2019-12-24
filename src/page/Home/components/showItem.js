@@ -6,23 +6,24 @@ import {SCREEN_WIDTH} from '../../../shared/ultility';
 
 export default class ShowItem extends React.Component {
   render() {
+    const {item} = this.props
     return (
       <TouchableOpacity onPress={this.props.onPressItem}>
         <View style={styles.showItem}>
           <Image
-            source={{uri: this.props.item.card}}
+            source={{uri: item.card}}
             resizeMode="cover"
             style={{width: '100%', height: '40%'}}
           />
           <View style={{width: '100%'}}>
             <Text numberOfLines={2} style={styles.showName}>
-              {this.props.item.title}
+              {item.title}
             </Text>
             <Text style={styles.descriptionText}>
-              {this.props.item.category}
+              {item.category}
             </Text>
             <Text style={styles.dateText}>
-              {this.props.item.dateNum} {this.props.item.dateMonth}
+              {item.dateNum} Tháng {item.dateMonth} Năm {item.dateYear}
             </Text>
             <Button rounded small style={styles.btnStyle}>
               <Text uppercase={false} style={styles.btnText}>

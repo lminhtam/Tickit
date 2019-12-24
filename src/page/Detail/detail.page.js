@@ -12,7 +12,7 @@ import {Text, Button, Icon, Spinner} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import StarRating from 'react-native-star-rating';
-import {SCREEN_WIDTH} from '../../shared/ultility';
+import {SCREEN_WIDTH, formatCurrency} from '../../shared/ultility';
 import Ticket from '../../../firebaseConfig';
 import ReadMore from 'react-native-read-more-text';
 import firebase from 'firebase';
@@ -47,7 +47,10 @@ export default class DetailPage extends React.Component {
       .on('value', snapshot => {
         data = snapshot.val();
         data.ticket.forEach(this.toNumber);
-        this.setState({item: data});
+        let quantity = [];
+        quantity = data.ticket.slice();
+        quantity.forEach(this.setQuantity);
+        this.setState({quantityTicket: quantity, item: data});
       });
     await Ticket.database()
       .ref('showDescription')
@@ -59,11 +62,6 @@ export default class DetailPage extends React.Component {
     await this.setState({
       used: used,
     });
-
-    let quantity = [];
-    quantity = data.ticket.slice();
-    quantity.forEach(this.setQuantity);
-    await this.setState({quantityTicket: quantity});
   };
 
   toNumber = (item, index, arr) => {
@@ -131,62 +129,59 @@ export default class DetailPage extends React.Component {
     });
   };
 
-  renderItem = ({item, index}) => {
-    if (item.type !== '')
-      return (
-        <View style={styles.ticketItem}>
-          <View style={{flex: 2}}>
-            <Text style={styles.ticketType}>{item.type}</Text>
-            <Text style={styles.ticketPrice}>{item.price}</Text>
-          </View>
-          <View style={styles.quantityBtn}>
-            <TouchableOpacity
-              onPress={() => this.onPressMinusBtn(item.quantity, index)}
-              disabled={item.quantity <= 0}
-              style={[
-                styles.btnContainer,
-                {
-                  borderColor:
-                    item.quantity > 0 ? Color.primaryColor : Color.gray,
-                  marginRight: 16,
-                },
-              ]}>
-              <Icon
-                style={[
-                  styles.iconStyle,
-                  {color: item.quantity > 0 ? Color.primaryColor : Color.gray},
-                ]}
-                name="minus"
-                type="AntDesign"
-              />
-            </TouchableOpacity>
-            <View style={styles.quantityContainer}>
-              <Text style={styles.ticketType}>{item.quantity}</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => this.onPressPlusBtn(item.quantity, index)}
-              disabled={item.quantity >= 2}
-              style={[
-                styles.btnContainer,
-                {
-                  borderColor:
-                    item.quantity < 2 ? Color.primaryColor : Color.gray,
-                  marginLeft: 16,
-                },
-              ]}>
-              <Icon
-                style={[
-                  styles.iconStyle,
-                  {color: item.quantity < 2 ? Color.primaryColor : Color.gray},
-                ]}
-                name="plus"
-                type="AntDesign"
-              />
-            </TouchableOpacity>
-          </View>
+  renderItem = ({item, index}) => (
+    <View style={styles.ticketItem}>
+      <View style={{flex: 2}}>
+        <Text style={styles.ticketType}>{item.type}</Text>
+        <Text style={styles.ticketPrice}>
+          {formatCurrency(Number(item.price))}
+        </Text>
+      </View>
+      <View style={styles.quantityBtn}>
+        <TouchableOpacity
+          onPress={() => this.onPressMinusBtn(item.quantity, index)}
+          disabled={item.quantity <= 0}
+          style={[
+            styles.btnContainer,
+            {
+              borderColor: item.quantity > 0 ? Color.primaryColor : Color.gray,
+              marginRight: 16,
+            },
+          ]}>
+          <Icon
+            style={[
+              styles.iconStyle,
+              {color: item.quantity > 0 ? Color.primaryColor : Color.gray},
+            ]}
+            name="minus"
+            type="AntDesign"
+          />
+        </TouchableOpacity>
+        <View style={styles.quantityContainer}>
+          <Text style={styles.ticketType}>{item.quantity}</Text>
         </View>
-      );
-  };
+        <TouchableOpacity
+          onPress={() => this.onPressPlusBtn(item.quantity, index)}
+          disabled={item.quantity >= 2}
+          style={[
+            styles.btnContainer,
+            {
+              borderColor: item.quantity < 2 ? Color.primaryColor : Color.gray,
+              marginLeft: 16,
+            },
+          ]}>
+          <Icon
+            style={[
+              styles.iconStyle,
+              {color: item.quantity < 2 ? Color.primaryColor : Color.gray},
+            ]}
+            name="plus"
+            type="AntDesign"
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   render() {
     return (
@@ -238,7 +233,7 @@ export default class DetailPage extends React.Component {
                 <Text style={styles.fromText}>
                   Từ{' '}
                   <Text style={styles.fromPriceText}>
-                    {this.state.item.priceFrom}
+                    {formatCurrency(Number(this.state.item.priceFrom))}
                   </Text>
                 </Text>
               </View>
