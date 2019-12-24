@@ -79,3 +79,11 @@ export const checkCategory = (value, filter) => {
       value.category === 'Hội chợ'
     );
 };
+
+export function formatCurrency(n, separate = '.') {
+  var s = n.toString();
+  var regex = /\B(?=(\d{3})+(?!\d))/g;
+  var ret = s.replace(regex, separate);
+  ret += ' VND';
+  return ret;
+}

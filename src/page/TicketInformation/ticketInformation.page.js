@@ -11,6 +11,7 @@ import {Text, Button, Icon} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import Ticket from '../../../firebaseConfig';
+import {formatCurrency} from '../../shared/ultility';
 
 export default class TicketInformationPage extends React.Component {
   static navigationOptions = {
@@ -40,17 +41,10 @@ export default class TicketInformationPage extends React.Component {
 
     let quantity = this.props.navigation.getParam('quantityTicket');
     await this.setState({quantityTicket: quantity});
-    quantity.forEach((item, index, arr) => {
-      let tmp = item.price.replace(' VND', '');
-      // console.log(tmp)
-      tmp = tmp.replace(/./g, '');
-      // console.log(tmp)
-      arr[index].price = Number(tmp);
-    });
-    // console.log(quantity);
+
     var total = 0;
     for (let i = 0; i < quantity.length; i++)
-      total += quantity[i].price * quantity[i].quantity;
+      total += Number(quantity[i].price) * quantity[i].quantity;
     await this.setState({total: total});
   };
 
@@ -92,33 +86,35 @@ export default class TicketInformationPage extends React.Component {
               />
               <Text style={styles.infoText}>{this.state.item.date}</Text>
             </View>
-            <View style={{flexDirection: 'row'}}>
-              <View style={styles.sectionContainer}>
-                <Text style={styles.sectionText}>Loại:</Text>
-                <FlatList
-                  data={this.state.quantityTicket}
-                  renderItem={({item}) => {
-                    if (item.quantity > 0)
-                      return <Text style={styles.detailText}>{item.type}</Text>;
-                  }}
-                  keyExtractor={item => item.type}
-                  showsVerticalScrollIndicator={false}
-                />
+            <View style={styles.quantitySection}>
+              <View
+                style={styles.ticketRow}>
+                <View style={styles.typeSection}>
+                  <Text style={styles.sectionText}>Loại:</Text>
+                </View>
+                <View style={styles.priceSection}>
+                  <Text style={styles.sectionText}>Số lượng:</Text>
+                </View>
               </View>
-              <View style={styles.sectionContainer}>
-                <Text style={styles.sectionText}>Số lượng:</Text>
-                <FlatList
-                  data={this.state.quantityTicket}
-                  renderItem={({item}) => {
-                    if (item.quantity > 0)
-                      return (
-                        <Text style={styles.detailText}>{item.quantity}</Text>
-                      );
-                  }}
-                  keyExtractor={item => item.type}
-                  showsVerticalScrollIndicator={false}
-                />
-              </View>
+              <FlatList
+                data={this.state.quantityTicket}
+                renderItem={({item}) => {
+                  if (item.quantity > 0)
+                    return (
+                      <View
+                        style={styles.ticketRow}>
+                        <View style={styles.typeSection}>
+                          <Text style={styles.detailText}>{item.type}</Text>
+                        </View>
+                        <View style={styles.priceSection}>
+                          <Text style={styles.detailText}>{item.quantity}</Text>
+                        </View>
+                      </View>
+                    );
+                }}
+                keyExtractor={item => item.type}
+                showsVerticalScrollIndicator={false}
+              />
             </View>
             <View
               style={{
@@ -128,7 +124,9 @@ export default class TicketInformationPage extends React.Component {
               <Text style={styles.sectionText}>Người đặt vé:</Text>
               <Text style={styles.detailText}>{this.state.user.fullname}</Text>
               <Text style={styles.sectionText}>Tổng cộng:</Text>
-              <Text style={styles.priceText}>{this.state.total}</Text>
+              <Text style={styles.priceText}>
+                {formatCurrency(this.state.total)}
+              </Text>
             </View>
           </View>
           <Button
@@ -158,6 +156,24 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 60,
   },
+  quantitySection: {
+    flexDirection: 'column',
+    marginLeft: 16,
+    marginRight: 16,
+    justifyContent: 'center',
+  },
+  ticketRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  typeSection: {
+    alignItems: 'center',
+    flex: 2,
+  },
+  priceSection: {
+    alignItems: 'center',
+    flex: 1,
+  },
   img: {
     borderTopLeftRadius: 9,
     borderTopRightRadius: 9,
@@ -165,6 +181,11 @@ const styles = StyleSheet.create({
     height: 200,
   },
   sectionContainer: {
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  sectionQuantityContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -198,6 +219,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Cabin-SemiBold',
     fontSize: 20,
     color: 'black',
+    textAlign: 'center',
   },
   priceText: {
     fontFamily: 'Cabin-SemiBold',

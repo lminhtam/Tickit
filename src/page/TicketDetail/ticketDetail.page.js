@@ -6,6 +6,7 @@ import QRCode from 'react-native-qrcode-svg';
 import CustomHeader from '../../shared/component/customHeader';
 import {StackActions} from 'react-navigation';
 import Ticket from '../../../firebaseConfig';
+import firebase from 'firebase';
 
 const popAction = StackActions.pop({
   n: 3,
@@ -23,6 +24,7 @@ export default class TicketDetailPage extends React.Component {
       item: {},
       user: this.props.navigation.getParam('user'),
       quantity: this.props.navigation.getParam('quantityTicket'),
+      qrValue: ' ',
     };
   }
 
@@ -36,6 +38,20 @@ export default class TicketDetailPage extends React.Component {
         data = snapshot.val();
         this.setState({item: data});
       });
+
+    const quantity = this.props.navigation.getParam('quantityTicket');
+    let qrValue = data.title + '\n\n';
+    for (let i = 0; i < quantity.length; i++) {
+      if (quantity[i].quantity > 0)
+        qrValue +=
+          'Loại: ' +
+          quantity[i].type +
+          '\nSố lượng: ' +
+          quantity[i].quantity.toString() +
+          '\n\n';
+    }
+    qrValue += this.state.user.fullname;
+    this.setState({qrValue: qrValue});
   };
 
   componentDidMount() {
@@ -83,7 +99,7 @@ export default class TicketDetailPage extends React.Component {
             </View>
             <View style={styles.lineSeperator}></View>
             <View style={styles.qrContainer}>
-              <QRCode value={`Ten: ${this.state.user.fullname}\n`} />
+              <QRCode value={this.state.qrValue} />
             </View>
           </View>
           <Button rounded style={styles.bookBtn}>

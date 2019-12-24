@@ -5,6 +5,7 @@ import Color from '../../../shared/Color';
 
 export default class ShowRecommendItem extends React.Component {
   render() {
+    const {item} = this.props
     return (
       <TouchableOpacity
         style={styles.showItem}
@@ -13,17 +14,17 @@ export default class ShowRecommendItem extends React.Component {
           <CardItem>
             <View style={{width: '100%', height: 300}}>
               <Image
-                source={{uri: this.props.item.card}}
+                source={{uri: item.card}}
                 resizeMode="cover"
                 style={{width: '100%', height: '50%'}}
               />
               <View style={{width: '100%'}}>
-                <Text numberOfLines={2} style={styles.showName}>{this.props.item.title}</Text>
+                <Text numberOfLines={2} style={styles.showName}>{item.title}</Text>
                 <Text style={styles.descriptionText}>
-                  {this.props.item.category}
+                  {item.category}
                 </Text>
                 <Text style={styles.dateText}>
-                  {this.props.item.dateNum} {this.props.item.dateMonth}
+                  {item.dateNum} Tháng {item.dateMonth} Năm {item.dateYear}
                 </Text>
                 <Button rounded small style={styles.btnStyle}>
                   <Text uppercase={false} style={styles.btnText}>
