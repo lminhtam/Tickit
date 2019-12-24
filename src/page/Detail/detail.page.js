@@ -123,6 +123,7 @@ export default class DetailPage extends React.Component {
       if (user) {
         if (!this.state.quantityTicket.every(this.checkQuantity))
           this.props.navigation.navigate('Booking', {
+            itemIndex: this.props.navigation.getParam('index'),
             ticketQuantity: this.state.quantityTicket,
           });
         else this.setState({cannotBuy: true});

@@ -5,6 +5,7 @@ import Color from '../../shared/Color.js';
 import QRCode from 'react-native-qrcode-svg';
 import CustomHeader from '../../shared/component/customHeader';
 import {StackActions} from 'react-navigation';
+import Ticket from '../../../firebaseConfig';
 
 const popAction = StackActions.pop({
   n: 3,
@@ -18,13 +19,27 @@ export default class TicketDetailPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      used: '',
+      used: this.props.navigation.getParam('used'),
+      item: {},
+      user: this.props.navigation.getParam('user'),
+      quantity: this.props.navigation.getParam('quantityTicket'),
     };
   }
 
+  getItem = async () => {
+    let index = this.props.navigation.getParam('itemIndex');
+    let data = {};
+    await Ticket.database()
+      .ref('shows')
+      .child(index)
+      .on('value', snapshot => {
+        data = snapshot.val();
+        this.setState({item: data});
+      });
+  };
+
   componentDidMount() {
-    let used = this.props.navigation.getParam('used');
-    this.setState({used: used});
+    this.getItem();
   }
 
   onPressBack = () => {
@@ -44,19 +59,19 @@ export default class TicketDetailPage extends React.Component {
           <View style={styles.ticketContainer}>
             <View>
               <Image
-                source={require('../../assets/img/music-laser.png')}
+                source={{uri: this.state.item.card}}
                 style={styles.img}
                 resizeMode={'cover'}
               />
             </View>
-            <Text style={styles.showName}>Music Laser Show</Text>
+            <Text style={styles.showName}>{this.state.item.title}</Text>
             <View style={styles.infoContainer}>
               <Icon
                 name="location-on"
                 type="MaterialIcons"
                 style={{fontSize: 14}}
               />
-              <Text style={styles.infoText}>Nhà hát Hòa Bình - Quận 10</Text>
+              <Text style={styles.infoText}>{this.state.item.address}</Text>
             </View>
             <View style={styles.infoContainer}>
               <Icon
@@ -64,11 +79,11 @@ export default class TicketDetailPage extends React.Component {
                 type="MaterialIcons"
                 style={{fontSize: 14}}
               />
-              <Text style={styles.infoText}>15/10/2019 - 19:00</Text>
+              <Text style={styles.infoText}>{this.state.item.date}</Text>
             </View>
             <View style={styles.lineSeperator}></View>
             <View style={styles.qrContainer}>
-              <QRCode value="Trang ne" />
+              <QRCode value={`Ten: ${this.state.user.fullname}\n`} />
             </View>
           </View>
           <Button rounded style={styles.bookBtn}>
@@ -90,6 +105,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 9,
     borderTopRightRadius: 9,
     width: '100%',
+    height: 200,
   },
   sectionContainer: {
     flex: 1,
