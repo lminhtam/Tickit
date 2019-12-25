@@ -13,6 +13,7 @@ import java.util.List;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.RNFetchBlob.RNFetchBlobPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 

@@ -33,7 +33,7 @@ const list = [
   {
     key: 4,
     title: 'Cài đặt',
-    navigation: 'BookedTicket',
+    navigation: 'Setting',
   },
 ];
 
@@ -45,16 +45,25 @@ export default class ProfilePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      fullname: '',
-      email: '',
+      fullname: firebase.auth().currentUser.displayName,
+      email: firebase.auth().currentUser.email,
+      imgURL: firebase.auth().currentUser.photoURL,
     };
   }
 
   componentDidMount() {
-    this.setState({
-      fullname: firebase.auth().currentUser.displayName,
-      email: firebase.auth().currentUser.email,
+    this._navListener = this.props.navigation.addListener('didFocus', () => {
+      const user = firebase.auth().currentUser;
+      if (user.email !== this.state.email) this.setState({email: user.email});
+      if (user.displayName !== this.state.fullname)
+        this.setState({fullname: user.displayName});
+      if (user.photoURL !== this.state.imgURL)
+        this.setState({imgURL: user.photoURL});
     });
+  }
+
+  componentWillUnmount() {
+    this._navListener.remove();
   }
 
   signOutUser = async () => {
@@ -94,11 +103,19 @@ export default class ProfilePage extends React.Component {
         </View>
         <ScrollView>
           <View style={styles.infoContainer}>
-            <Image
-              style={{borderRadius: 50}}
-              source={require('../../assets/img/avatar.png')}
-              resizeMode="stretch"
-            />
+            {this.state.imgURL ? (
+              <Image
+                style={styles.avatar}
+                source={{uri: this.state.imgURL}}
+                resizeMode="cover"
+              />
+            ) : (
+              <Image
+                style={styles.avatar}
+                source={require('../../assets/img/no_avatar.png')}
+                resizeMode="cover"
+              />
+            )}
             <View style={{marginLeft: 16}}>
               <Text style={styles.name}>{this.state.fullname}</Text>
               <Text style={styles.email}>{this.state.email}</Text>
@@ -166,5 +183,10 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 18,
     alignSelf: 'center',
+  },
+  avatar: {
+    borderRadius: 50,
+    width: 70,
+    height: 70,
   },
 });
