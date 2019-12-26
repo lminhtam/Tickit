@@ -10,11 +10,7 @@ import CustomHeader from '../../shared/component/customHeader';
 import firebase from 'firebase';
 import CustomModal from '../../shared/component/customModal';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes,
-} from 'react-native-google-signin';
+import {GoogleSignin, statusCodes} from 'react-native-google-signin';
 
 export default class SignUpPage extends React.Component {
   static navigationOptions = {
@@ -24,8 +20,9 @@ export default class SignUpPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isSignUpSuccess: true,
       isHaveAccount: false,
+      isNotHaveAccount:
+        false || this.props.navigation.getParam('isNotHaveAccount'),
     };
   }
 
@@ -41,28 +38,6 @@ export default class SignUpPage extends React.Component {
       accountName: '',
     });
   }
-
-  _signIn = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      // this.setState({ userInfo: userInfo, loggedIn: true });
-      const credential = firebase.auth.GoogleAuthProvider.credential(userInfo.idToken, userInfo.accessToken)
-      // login with credential
-      const firebaseUserCredential = await firebase.auth().signInWithCredential(credential);
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (f.e. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-        console.log('play service')
-      } else {
-        // some other error happened
-      }
-    }
-  };
 
   validationSchema = yup.object().shape({
     email: yup
@@ -158,9 +133,43 @@ export default class SignUpPage extends React.Component {
     );
   };
 
+  _googleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const credential = firebase.auth.GoogleAuthProvider.credential(
+        userInfo.idToken,
+        userInfo.accessToken,
+      );
+      firebase
+        .auth()
+        .signInWithCredential(credential)
+        .then(() => {
+          firebase
+            .database()
+            .ref('users/' + firebase.auth().currentUser.uid + '/profile')
+            .set({
+              fullname: firebase.auth().currentUser.displayName,
+              email: firebase.auth().currentUser.email,
+            });
+          this.props.navigation.navigate('Profile');
+        });
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('Cancelled sign up');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        this.setState({isHaveAccount: true});
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('Play service is not available');
+      } else {
+        console.log('Unknown error');
+      }
+    }
+  };
+
   render() {
     return (
-      <View style={{backgroundColor: 'white'}}>
+      <View>
         <View>
           <CustomHeader title="Đăng ký" isLeftBtnVisible={false} />
         </View>
@@ -174,6 +183,13 @@ export default class SignUpPage extends React.Component {
               this.setState({isHaveAccount: false});
               this.props.navigation.navigate('Login');
             }}
+          />
+          <CustomModal
+            isModalVisible={this.state.isNotHaveAccount}
+            isSuccess={false}
+            text="Bạn chưa có tài khoản. Vui lòng nhấn nút quay lại và đăng ký."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isNotHaveAccount: false})}
           />
           <Formik
             initialValues={{email: '', password: '', fullname: ''}}
@@ -273,19 +289,12 @@ export default class SignUpPage extends React.Component {
                         flexDirection: 'row',
                         justifyContent: 'space-around',
                       }}>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => this._googleSignIn()}>
                         <Image
                           source={require('../../assets/img/Google.png')}
                           style={{width: 92, height: 64}}
                         />
                       </TouchableOpacity>
-                      <GoogleSigninButton
-                        style={{width: 192, height: 48}}
-                        size={GoogleSigninButton.Size.Wide}
-                        color={GoogleSigninButton.Color.Dark}
-                        onPress={this._signIn}
-                        // disabled={this.state.isSigninInProgress}
-                      />
                       <TouchableOpacity
                         onPress={() => this.handleFacebookLogin()}>
                         <Image
@@ -306,6 +315,9 @@ export default class SignUpPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  mainViewStyle: {
+    backgroundColor: 'white',
+  },
   headerText: {
     color: 'black',
     fontFamily: 'Cabin-Regular',

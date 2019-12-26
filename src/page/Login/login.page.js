@@ -11,6 +11,7 @@ import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import firebase from 'firebase';
 import CustomModal from '../../shared/component/customModal';
 import Ticket from '../../../firebaseConfig';
+import {GoogleSignin, statusCodes} from 'react-native-google-signin';
 
 export default class LoginPage extends React.Component {
   static navigationOptions = {
@@ -24,6 +25,19 @@ export default class LoginPage extends React.Component {
       isNotHaveAccount: false,
       isHaveAccount: false,
     };
+  }
+
+  componentDidMount() {
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      webClientId:
+        '632063081492-rcfmt003oumdinga4u9j4hvhsbdqtje9.apps.googleusercontent.com',
+      offlineAccess: true,
+      hostedDomain: '',
+      loginHint: '',
+      forceConsentPrompt: true,
+      accountName: '',
+    });
   }
 
   validationSchema = yup.object().shape({
@@ -40,18 +54,6 @@ export default class LoginPage extends React.Component {
       }),
   });
 
-  checkExistUser = async () => {
-    await Ticket.database()
-      .ref('users')
-      .once('value', snapshot => console.log(snapshot.hasChild(firebase.auth().currentUser.uid)));
-    // if (snapshot.hasChild(firebase.auth().currentUser.uid)) {
-    //   this.props.navigation.navigate('Profile');
-    // } else {
-    //   console.log(snapshot);
-    //   this.setState({isNotHaveAccount: true});
-    // }
-  };
-
   handleFacebookLogin = () => {
     LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       value => {
@@ -65,7 +67,7 @@ export default class LoginPage extends React.Component {
             firebase
               .auth()
               .signInWithCredential(credential)
-              .then(() => this.checkExistUser())
+              .then(() => {})
               .catch(error => {
                 if (
                   error.code === 'auth/account-exists-with-different-credential'
@@ -89,6 +91,30 @@ export default class LoginPage extends React.Component {
         else if (error.code === 'auth/wrong-password')
           this.setState({isWrongPassword: true});
       });
+  };
+  _googleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const credential = firebase.auth.GoogleAuthProvider.credential(
+        userInfo.idToken,
+        userInfo.accessToken,
+      );
+      firebase
+        .auth()
+        .signInWithCredential(credential)
+        .then(() => {});
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('Cancelled sign up');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        this.setState({isHaveAccount: true});
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('Play service is not available');
+      } else {
+        console.log('Unknown error');
+      }
+    }
   };
 
   render() {
@@ -181,7 +207,9 @@ export default class LoginPage extends React.Component {
                       <Text style={styles.bottomTxt}>Chưa có tài khoản?</Text>
                       <TouchableOpacity
                         onPress={() =>
-                          this.props.navigation.navigate('SignUp')
+                          this.props.navigation.navigate('SignUp', {
+                            isNotHaveAccount: false,
+                          })
                         }>
                         <Text
                           style={[
@@ -216,7 +244,7 @@ export default class LoginPage extends React.Component {
                         flexDirection: 'row',
                         justifyContent: 'space-around',
                       }}>
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={() => this._googleSignIn()}>
                         <Image
                           source={require('../../assets/img/Google.png')}
                           style={{width: 92, height: 64}}

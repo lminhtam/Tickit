@@ -62,7 +62,9 @@ export default class ForgotPasswordPage extends React.Component {
             btnText="Đăng ký"
             onPressBtn={() => {
               this.setState({isNotHaveAccount: false});
-              this.props.navigation.navigate('SignUp');
+              this.props.navigation.navigate('SignUp', {
+                isNotHaveAccount: false,
+              });
             }}
           />
           <Formik
