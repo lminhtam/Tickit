@@ -318,11 +318,6 @@ const styles = StyleSheet.create({
   mainViewStyle: {
     backgroundColor: 'white',
   },
-  headerText: {
-    color: 'black',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 28,
-  },
   input: {
     fontFamily: 'Cabin-Regular',
     fontSize: 16,

@@ -15,7 +15,6 @@ export default class SearchPage extends React.Component {
       show: [],
       isLoading: true,
     };
-    // this.arrayholder = [];
   }
 
   readUserData = async () => {
@@ -31,7 +30,7 @@ export default class SearchPage extends React.Component {
 
   componentDidMount() {
     this.readUserData();
-    this.setState({isLoading: false})
+    this.setState({isLoading: false});
   }
 
   filterShow = item => {
@@ -99,40 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Color.gray,
     alignSelf: 'center',
-    marginTop: 16,
-  },
-  textStyle: {
-    padding: 10,
-  },
-  titleTextStyle: {
-    color: Color.primaryColor,
-    fontFamily: 'Cabin-SemiBold',
-    fontSize: 20,
-    margin: 16,
-  },
-  showName: {
-    color: 'black',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 20,
-  },
-  descriptionText: {
-    color: Color.gray,
-    fontFamily: 'Cabin-Regular',
-    fontSize: 16,
-  },
-  dateText: {
-    color: 'black',
-    fontFamily: 'Cabin-Italic',
-    fontSize: 14,
-  },
-  btnText: {
-    color: 'white',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 16,
-  },
-  btnStyle: {
-    backgroundColor: Color.primaryColor,
-    justifyContent: 'center',
     marginTop: 16,
   },
   showItem: {

@@ -87,8 +87,7 @@ export default class TicketInformationPage extends React.Component {
               <Text style={styles.infoText}>{this.state.item.date}</Text>
             </View>
             <View style={styles.quantitySection}>
-              <View
-                style={styles.ticketRow}>
+              <View style={styles.ticketRow}>
                 <View style={styles.typeSection}>
                   <Text style={styles.sectionText}>Loại:</Text>
                 </View>
@@ -101,8 +100,7 @@ export default class TicketInformationPage extends React.Component {
                 renderItem={({item}) => {
                   if (item.quantity > 0)
                     return (
-                      <View
-                        style={styles.ticketRow}>
+                      <View style={styles.ticketRow}>
                         <View style={styles.typeSection}>
                           <Text style={styles.detailText}>{item.type}</Text>
                         </View>
@@ -179,16 +177,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 9,
     width: '100%',
     height: 200,
-  },
-  sectionContainer: {
-    flex: 2,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  sectionQuantityContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   ticketContainer: {
     margin: 28,

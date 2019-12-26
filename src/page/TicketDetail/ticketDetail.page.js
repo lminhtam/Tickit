@@ -123,11 +123,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
   },
-  sectionContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   ticketContainer: {
     margin: 28,
     backgroundColor: 'white',
@@ -146,23 +141,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'black',
     marginLeft: 16,
-  },
-  sectionText: {
-    fontFamily: 'Cabin-Regular',
-    fontSize: 16,
-    color: 'black',
-    marginTop: 16,
-  },
-  detailText: {
-    fontFamily: 'Cabin-SemiBold',
-    fontSize: 20,
-    color: 'black',
-  },
-  priceText: {
-    fontFamily: 'Cabin-SemiBold',
-    fontSize: 28,
-    color: 'red',
-    marginBottom: 16,
   },
   showName: {
     fontFamily: 'Cabin-Regular',
