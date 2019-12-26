@@ -269,6 +269,7 @@ export default class DetailPage extends React.Component {
                 />
                 <Button
                   rounded
+                  block
                   style={styles.bookBtn}
                   onPress={() => this.onPressBookBtn()}>
                   <Text style={styles.bookText} uppercase={false}>

@@ -20,6 +20,8 @@ import LoadingPage from '../page/Loading/loading.page';
 import SettingPage from '../page/Setting/setting.page';
 import ChangeInformationPage from '../page/ChangeInformation/changeInformation.page';
 import ChangeAvatarPage from '../page/ChangeAvatar/changeAvatar.page';
+import PaymentPage from '../page/Payment/payment.page';
+import LikedShowPage from '../page/LikedShow/likedShow.page';
 
 const BookingStack = createStackNavigator(
   {
@@ -85,6 +87,8 @@ const ProfileStack = createStackNavigator(
     Setting: SettingPage,
     ChangeInformation: ChangeInformationPage,
     ChangeAvatar: ChangeAvatarPage,
+    Payment: PaymentPage,
+    LikedShow: LikedShowPage,
   },
   {
     headerMode: 'none',

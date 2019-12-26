@@ -23,12 +23,12 @@ const list = [
   {
     key: 2,
     title: 'Đã thích',
-    navigation: 'BookedTicket',
+    navigation: 'LikedShow',
   },
   {
     key: 3,
     title: 'Phương thức thanh toán',
-    navigation: 'BookedTicket',
+    navigation: 'Payment',
   },
   {
     key: 4,
@@ -128,6 +128,7 @@ export default class ProfilePage extends React.Component {
           />
           <Button
             rounded
+            block
             style={styles.logOutBtn}
             onPress={() => this.signOutUser()}>
             <Text style={styles.logOutText} uppercase={false}>

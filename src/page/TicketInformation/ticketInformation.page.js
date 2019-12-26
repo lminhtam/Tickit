@@ -129,6 +129,7 @@ export default class TicketInformationPage extends React.Component {
           </View>
           <Button
             rounded
+            block
             style={styles.bookBtn}
             onPress={() =>
               this.props.navigation.navigate('TicketDetail', {

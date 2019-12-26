@@ -102,7 +102,7 @@ export default class TicketDetailPage extends React.Component {
               <QRCode value={this.state.qrValue} />
             </View>
           </View>
-          <Button rounded style={styles.bookBtn}>
+          <Button rounded block style={styles.bookBtn}>
             <Text style={styles.bookText} uppercase={false}>
               Hủy vé
             </Text>
