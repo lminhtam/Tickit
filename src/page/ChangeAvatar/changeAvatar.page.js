@@ -6,13 +6,12 @@ import {
   StyleSheet,
   View,
   Image,
-  PermissionsAndroid,
 } from 'react-native';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import firebase from 'firebase';
 import CustomModal from '../../shared/component/customModal';
-import RNFetchBlob from 'react-native-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob';
 import ImagePicker from 'react-native-image-picker';
 import Ticket from '../../../firebaseConfig';
 import {SCREEN_WIDTH} from '../../shared/ultility.js';
@@ -73,7 +72,7 @@ export default class ChangeAvatarPage extends React.Component {
         .then(url => {
           firebase.auth().currentUser.updateProfile({photoURL: url});
           resolve(url);
-          console.log(url);
+          this.setState({isDone: true})
         })
         .catch(error => {
           reject(error);
@@ -82,20 +81,7 @@ export default class ChangeAvatarPage extends React.Component {
   }
 
   getImage = async () => {
-    // try {
-    //   const granted = await PermissionsAndroid.request(
-    //     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    //     {
-    //       title: 'Truy cập camera',
-    //       message: 'Truy cập camera để lấy ảnh?',
-    //       buttonNegative: 'Hủy bỏ',
-    //       buttonPositive: 'Cho phép',
-    //     },
-    //   );
-    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
     ImagePicker.showImagePicker(options, response => {
-      // console.log('Response = ', response);
-
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -104,12 +90,6 @@ export default class ChangeAvatarPage extends React.Component {
         this.setState({imgURL: response.uri, imgName: response.fileName});
       }
     });
-    // } else {
-    //   console.log('Camera permission denied');
-    // }
-    // } catch (err) {
-    //   console.log(err);
-    // }
   };
 
   render() {
