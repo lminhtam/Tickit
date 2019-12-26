@@ -201,6 +201,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
     implementation project(":react-native-google-signin")
+    implementation project(':react-native-fetch-blob')   
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

@@ -17,6 +17,9 @@ import ForgotPasswordPage from '../page/ForgotPassword/forgotPassword.page';
 import ProfilePage from '../page/Profile/profile.page';
 import BookedTicketPage from '../page/BookedTicket/bookedTicket.page';
 import LoadingPage from '../page/Loading/loading.page';
+import SettingPage from '../page/Setting/setting.page';
+import ChangeInformationPage from '../page/ChangeInformation/changeInformation.page';
+import ChangeAvatarPage from '../page/ChangeAvatar/changeAvatar.page';
 
 const BookingStack = createStackNavigator(
   {
@@ -79,6 +82,9 @@ const ProfileStack = createStackNavigator(
     ProfilePage: ProfilePage,
     BookedTicket: BookedTicketPage,
     DetailTicket: TicketDetailPage,
+    Setting: SettingPage,
+    ChangeInformation: ChangeInformationPage,
+    ChangeAvatar: ChangeAvatarPage,
   },
   {
     headerMode: 'none',
