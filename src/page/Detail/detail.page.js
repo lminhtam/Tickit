@@ -105,9 +105,7 @@ export default class DetailPage extends React.Component {
     );
   };
 
-  _handleTextReady = () => {
-    // ...
-  };
+  _handleTextReady = () => {};
 
   checkQuantity = (item, index) => {
     return (
@@ -271,6 +269,7 @@ export default class DetailPage extends React.Component {
                 />
                 <Button
                   rounded
+                  block
                   style={styles.bookBtn}
                   onPress={() => this.onPressBookBtn()}>
                   <Text style={styles.bookText} uppercase={false}>
@@ -293,19 +292,9 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 60,
   },
-  fromContainer: {
-    alignItems: 'center',
-    flex: 1,
-  },
   nameContainer: {
     justifyContent: 'flex-start',
     margin: 16,
-  },
-  contanier: {
-    flexDirection: 'row',
-    margin: 16,
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   ticketType: {
     color: 'black',

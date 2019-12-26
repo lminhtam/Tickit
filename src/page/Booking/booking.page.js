@@ -134,6 +134,7 @@ export default class BookingPage extends React.Component {
                   )}
                   <Button
                     rounded
+                    block
                     disabled={!isValid}
                     style={[
                       styles.bookBtn,

@@ -1,17 +1,16 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Button, Text, Spinner} from 'native-base';
+import {Text, Spinner} from 'native-base';
 import * as React from 'react';
 import {FlatList, Platform, StyleSheet, View} from 'react-native';
 import Color from '../../shared/Color';
-import SearchBarComponent from './components/searchBar';
 import ShowItem from '../Home/components/showItem';
 import Ticket from '../../../firebaseConfig';
+import CustomHeader from '../../shared/component/customHeader';
 
-export default class SearchPage extends React.Component {
+export default class LikedShowPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      search: '',
       show: [],
       isLoading: true,
     };
@@ -21,7 +20,7 @@ export default class SearchPage extends React.Component {
     let data = [];
     await Ticket.database()
       .ref()
-      .child('shows')
+      .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
       .once('value', snapshot => {
         data = snapshot.val();
       });
@@ -33,19 +32,6 @@ export default class SearchPage extends React.Component {
     this.setState({isLoading: false});
   }
 
-  filterShow = item => {
-    return (
-      item.title.toLowerCase().includes(this.state.search.toLowerCase()) ||
-      item.category.toLowerCase().includes(this.state.search.toLowerCase())
-    );
-  };
-
-  SearchFilterFunction = async text => {
-    await this.setState({
-      search: text,
-    });
-  };
-
   renderItem = ({item}) => {
     const index = this.state.show.indexOf(item);
     return (
@@ -53,7 +39,7 @@ export default class SearchPage extends React.Component {
         item={item}
         onPressItem={() =>
           this.props.navigation.navigate('Detail', {
-            used: 'Search',
+            used: 'LikedShow',
             index: index,
           })
         }
@@ -65,21 +51,21 @@ export default class SearchPage extends React.Component {
     if (this.state.isLoading) return <Spinner color={Color.primaryColor} />;
     return (
       <View style={styles.viewStyle}>
-        <SearchBarComponent
-          onChangeText={text => this.SearchFilterFunction(text)}
-          placeholder="Nhập tên show"
-          value={this.state.search}
+        <CustomHeader
+          title="Đã thích"
+          isLeftBtnVisible={true}
+          onPressBtnLeft={() => this.props.navigation.goBack()}
         />
         {this.state.show && this.state.show.length > 0 ? (
           <FlatList
-            data={this.state.show.filter(this.filterShow)}
+            data={this.state.show}
             renderItem={this.renderItem}
             enableEmptySections={true}
             style={{marginTop: 10}}
             keyExtractor={(item, index) => index.toString()}
           />
         ) : (
-          <Text style={styles.notFound}>Không tìm thấy kết quả phù hợp.</Text>
+          <Text style={styles.notFound}>Bạn chưa thích sự kiện nào.</Text>
         )}
       </View>
     );

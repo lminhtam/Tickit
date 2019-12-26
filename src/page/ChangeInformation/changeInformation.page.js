@@ -193,11 +193,6 @@ export default class ChangeInformationPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  headerText: {
-    color: 'black',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 28,
-  },
   input: {
     fontFamily: 'Cabin-Regular',
     fontSize: 16,
@@ -227,21 +222,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 30,
     marginHorizontal: 16,
-  },
-  bottomWrap: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    margin: 16,
-  },
-  bottomTxt: {
-    fontFamily: 'Cabin-Regular',
-    fontSize: 14,
-    color: 'black',
-  },
-  addButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

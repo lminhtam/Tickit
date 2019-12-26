@@ -270,11 +270,6 @@ export default class LoginPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  headerText: {
-    color: 'black',
-    fontFamily: 'Cabin-Regular',
-    fontSize: 28,
-  },
   input: {
     fontFamily: 'Cabin-Regular',
     fontSize: 16,
