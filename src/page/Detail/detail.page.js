@@ -311,8 +311,12 @@ export default class DetailPage extends React.Component {
                     style={styles.likeBtn}
                     onPress={() => this.onPressLikeBtn()}>
                     <Icon
-                      name={this.state.liked ? 'heart' : 'heart-outlined'}
-                      type="Entypo"
+                      name={
+                        false || this.props.liked
+                          ? 'ios-heart'
+                          : 'ios-heart-empty'
+                      }
+                      type="Ionicons"
                       style={styles.icon}
                     />
                   </TouchableOpacity>

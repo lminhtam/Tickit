@@ -21,8 +21,10 @@ export default class ShowItem extends React.Component {
               style={styles.likeBtn}
               onPress={this.props.onPressLikeBtn}>
               <Icon
-                name={false || this.props.liked ? 'heart' : 'heart-outlined'}
-                type="Entypo"
+                name={
+                  false || this.props.liked ? 'ios-heart' : 'ios-heart-empty'
+                }
+                type="Ionicons"
                 style={styles.icon}
               />
             </TouchableOpacity>

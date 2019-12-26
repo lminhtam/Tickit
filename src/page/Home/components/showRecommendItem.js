@@ -24,9 +24,11 @@ export default class ShowRecommendItem extends React.Component {
                   onPress={this.props.onPressLikeBtn}>
                   <Icon
                     name={
-                      false || this.props.liked ? 'heart' : 'heart-outlined'
+                      false || this.props.liked
+                        ? 'ios-heart'
+                        : 'ios-heart-empty'
                     }
-                    type="Entypo"
+                    type="Ionicons"
                     style={styles.icon}
                   />
                 </TouchableOpacity>
@@ -100,8 +102,8 @@ const styles = StyleSheet.create({
     height: 24,
     margin: 16,
     position: 'absolute',
-    bottom: 0,
     right: 0,
+    bottom: 0,
     backgroundColor: Color.primaryColor,
     borderRadius: 50,
     justifyContent: 'flex-end',
@@ -109,8 +111,8 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 20,
     color: 'white',
-    position: 'absolute',
-    bottom: 0,
-    right: -10,
+    position: 'relative',
+    bottom: 1,
+    right: -4,
   },
 });
