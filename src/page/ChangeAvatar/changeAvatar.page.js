@@ -82,36 +82,34 @@ export default class ChangeAvatarPage extends React.Component {
   }
 
   getImage = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-        {
-          title: 'Truy cập camera',
-          message: 'Truy cập camera để lấy ảnh?',
-          buttonNegative: 'Hủy bỏ',
-          buttonPositive: 'Cho phép',
-        },
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        ImagePicker.showImagePicker(options, response => {
-          console.log('Response = ', response);
+    // try {
+    //   const granted = await PermissionsAndroid.request(
+    //     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+    //     {
+    //       title: 'Truy cập camera',
+    //       message: 'Truy cập camera để lấy ảnh?',
+    //       buttonNegative: 'Hủy bỏ',
+    //       buttonPositive: 'Cho phép',
+    //     },
+    //   );
+    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    ImagePicker.showImagePicker(options, response => {
+      // console.log('Response = ', response);
 
-          if (response.didCancel) {
-            console.log('User cancelled image picker');
-          } else if (response.error) {
-            console.log('ImagePicker Error: ', response.error);
-          } else if (response.customButton) {
-            console.log('User tapped custom button: ', response.customButton);
-          } else {
-            this.setState({imgURL: response.uri, imgName: response.fileName});
-          }
-        });
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        tthis.setState({isError: true});
       } else {
-        console.log('Camera permission denied');
+        this.setState({imgURL: response.uri, imgName: response.fileName});
       }
-    } catch (err) {
-      console.log(err);
-    }
+    });
+    // } else {
+    //   console.log('Camera permission denied');
+    // }
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   render() {

@@ -6,6 +6,7 @@ import Color from '../../shared/Color';
 import ShowItem from '../Home/components/showItem';
 import Ticket from '../../../firebaseConfig';
 import CustomHeader from '../../shared/component/customHeader';
+import firebase from 'firebase';
 
 export default class LikedShowPage extends React.Component {
   constructor(props) {
@@ -13,36 +14,64 @@ export default class LikedShowPage extends React.Component {
     this.state = {
       show: [],
       isLoading: true,
+      liked: [],
     };
   }
 
   readUserData = async () => {
     let data = [];
+    let shows = [];
     await Ticket.database()
       .ref()
-      .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
-      .once('value', snapshot => {
+      .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
+      .on('value', snapshot => {
         data = snapshot.val();
+        if (data) {
+          this.setState({liked: data});
+          shows = [];
+          for (let i = 0; i < data.length; i++) {
+            Ticket.database()
+              .ref('shows')
+              .child(data[i].toString())
+              .once('value', snapshot => {
+                shows.push(snapshot.val());
+                this.setState({show: shows});
+              });
+          }
+        } else this.setState({liked: [], show: []});
       });
-    await this.setState({show: data});
+    this.setState({isLoading: false});
   };
 
   componentDidMount() {
     this.readUserData();
-    this.setState({isLoading: false});
   }
 
-  renderItem = ({item}) => {
-    const index = this.state.show.indexOf(item);
+  onPressLikeBtn = async index => {
+    let likedShow = this.state.liked;
+    let pos = likedShow.indexOf(index);
+    if (pos !== -1) {
+      likedShow.splice(pos, 1);
+    } else likedShow.push(index);
+    await Ticket.database()
+      .ref()
+      .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
+      .set({liked: likedShow})
+      .then(() => this.setState({liked: likedShow}));
+  };
+
+  renderItem = ({item, index}) => {
     return (
       <ShowItem
         item={item}
+        liked={true}
         onPressItem={() =>
           this.props.navigation.navigate('Detail', {
             used: 'LikedShow',
-            index: index,
+            index: this.state.liked[index],
           })
         }
+        onPressLikeBtn={() => this.onPressLikeBtn(this.state.liked[index])}
       />
     );
   };
@@ -54,7 +83,7 @@ export default class LikedShowPage extends React.Component {
         <CustomHeader
           title="Đã thích"
           isLeftBtnVisible={true}
-          onPressBtnLeft={() => this.props.navigation.goBack()}
+          onPressBtnLeft={() => this.props.navigation.navigate('ProfilePage')}
         />
         {this.state.show && this.state.show.length > 0 ? (
           <FlatList

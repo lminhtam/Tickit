@@ -63,8 +63,8 @@ export default class SignUpPage extends React.Component {
       ),
   });
 
-  setDatabase = fullname => {
-    firebase
+  setDatabase = async fullname => {
+    await firebase
       .auth()
       .currentUser.updateProfile({
         displayName: fullname,

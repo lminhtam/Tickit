@@ -27,12 +27,16 @@ export default class DetailPage extends React.Component {
     super(props);
     this.state = {
       used: '',
+      index: this.props.navigation.getParam('index'),
       item: {},
+      liked: false,
       quantityTicket: [],
       description: '',
       isLoading: true,
       isNotLogin: false,
       cannotBuy: false,
+      isShowModal: false,
+      isCanBuy: false,
     };
   }
 
@@ -46,6 +50,13 @@ export default class DetailPage extends React.Component {
       .child(index)
       .on('value', snapshot => {
         data = snapshot.val();
+        let isCanBuy =
+          new Date(
+            Number(data.dateYear),
+            Number(data.dateMonth) - 1,
+            Number(data.dateNum),
+          ).getTime() > new Date().getTime();
+        this.setState({isCanBuy: isCanBuy});
         data.ticket.forEach(this.toNumber);
         let quantity = [];
         quantity = data.ticket.slice();
@@ -59,8 +70,22 @@ export default class DetailPage extends React.Component {
         description = snapshot.val();
         this.setState({description: description.description});
       });
+    if (firebase.auth().currentUser) {
+      await Ticket.database()
+        .ref()
+        .child(
+          'users/' +
+            firebase.auth().currentUser.uid +
+            '/likedShow/liked/' +
+            index.toString(),
+        )
+        .on('value', snapshot => {
+          if (snapshot.val()) this.setState({liked: true});
+        });
+    }
     await this.setState({
       used: used,
+      isLoading: false,
     });
   };
 
@@ -74,7 +99,6 @@ export default class DetailPage extends React.Component {
 
   componentDidMount() {
     this.getItem();
-    this.setState({isLoading: false});
   }
 
   onPressMinusBtn = (quantity, index) => {
@@ -114,6 +138,27 @@ export default class DetailPage extends React.Component {
     );
   };
 
+  onPressLikeBtn = async () => {
+    let likedShow = [];
+    if (firebase.auth().currentUser) {
+      await Ticket.database()
+        .ref()
+        .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
+        .once('value', snapshot => {
+          likedShow = snapshot.val();
+          let pos = likedShow.indexOf(this.state.index);
+          if (pos !== -1) {
+            likedShow.splice(pos, 1);
+          } else likedShow.push(this.state.index);
+          Ticket.database()
+            .ref()
+            .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
+            .set({liked: likedShow})
+            .then(() => this.setState({liked: !this.state.liked}));
+        });
+    } else this.setState({isShowModal: true});
+  };
+
   onPressBookBtn = () => {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
@@ -135,53 +180,68 @@ export default class DetailPage extends React.Component {
           {formatCurrency(Number(item.price))}
         </Text>
       </View>
-      <View style={styles.quantityBtn}>
-        <TouchableOpacity
-          onPress={() => this.onPressMinusBtn(item.quantity, index)}
-          disabled={item.quantity <= 0}
-          style={[
-            styles.btnContainer,
-            {
-              borderColor: item.quantity > 0 ? Color.primaryColor : Color.gray,
-              marginRight: 16,
-            },
-          ]}>
-          <Icon
+      <View style={{alignItems: 'center', flex: 1}}>
+        <View style={styles.quantityBtn}>
+          <TouchableOpacity
+            onPress={() => this.onPressMinusBtn(item.quantity, index)}
+            disabled={item.quantity <= 0}
             style={[
-              styles.iconStyle,
-              {color: item.quantity > 0 ? Color.primaryColor : Color.gray},
-            ]}
-            name="minus"
-            type="AntDesign"
-          />
-        </TouchableOpacity>
-        <View style={styles.quantityContainer}>
-          <Text style={styles.ticketType}>{item.quantity}</Text>
+              styles.btnContainer,
+              {
+                borderColor:
+                  item.quantity > 0 ? Color.primaryColor : Color.gray,
+                marginRight: 16,
+              },
+            ]}>
+            <Icon
+              style={[
+                styles.iconStyle,
+                {color: item.quantity > 0 ? Color.primaryColor : Color.gray},
+              ]}
+              name="minus"
+              type="AntDesign"
+            />
+          </TouchableOpacity>
+          <View style={styles.quantityContainer}>
+            <Text style={styles.ticketType}>{item.quantity}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => this.onPressPlusBtn(item.quantity, index)}
+            disabled={item.quantity >= 2 || !this.state.isCanBuy}
+            style={[
+              styles.btnContainer,
+              {
+                borderColor:
+                  item.quantity < 2 && this.state.isCanBuy
+                    ? Color.primaryColor
+                    : Color.gray,
+                marginLeft: 16,
+              },
+            ]}>
+            <Icon
+              style={[
+                styles.iconStyle,
+                {
+                  color:
+                    item.quantity < 2 && this.state.isCanBuy
+                      ? Color.primaryColor
+                      : Color.gray,
+                },
+              ]}
+              name="plus"
+              type="AntDesign"
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => this.onPressPlusBtn(item.quantity, index)}
-          disabled={item.quantity >= 2}
-          style={[
-            styles.btnContainer,
-            {
-              borderColor: item.quantity < 2 ? Color.primaryColor : Color.gray,
-              marginLeft: 16,
-            },
-          ]}>
-          <Icon
-            style={[
-              styles.iconStyle,
-              {color: item.quantity < 2 ? Color.primaryColor : Color.gray},
-            ]}
-            name="plus"
-            type="AntDesign"
-          />
-        </TouchableOpacity>
+        {!this.state.isCanBuy && (
+          <Text style={styles.stopSelling}>Ngừng bán</Text>
+        )}
       </View>
     </View>
   );
 
   render() {
+    if (this.state.isLoading) return <Spinner color={Color.primaryColor} />;
     return (
       <SafeAreaView style={styles.container}>
         <CustomHeader
@@ -198,6 +258,16 @@ export default class DetailPage extends React.Component {
             onPressBtn={() => {
               this.setState({isNotLogin: false});
               this.props.navigation.navigate('Profile');
+            }}
+          />
+          <CustomModal
+            isModalVisible={this.state.isShowModal}
+            isSuccess={false}
+            text="Bạn chưa đăng nhập. Để nhấn nút 'Yêu thích', vui lòng đăng nhập."
+            btnText="Đăng nhập"
+            onPressBtn={() => {
+              this.setState({isShowModal: false});
+              this.props.navigation.navigate('Login');
             }}
           />
           <CustomModal
@@ -218,22 +288,35 @@ export default class DetailPage extends React.Component {
               />
               <View style={styles.nameContainer}>
                 <Text style={styles.showName}>{this.state.item.title}</Text>
-                <StarRating
-                  disabled={true}
-                  maxStars={5}
-                  rating={Number(this.state.item.rating)}
-                  fullStarColor={Color.starColor}
-                  emptyStarColor={Color.starColor}
-                  starSize={18}
-                  containerStyle={{justifyContent: 'flex-start'}}
-                  starStyle={{paddingRight: 5}}
-                />
-                <Text style={styles.fromText}>
-                  Từ{' '}
-                  <Text style={styles.fromPriceText}>
-                    {formatCurrency(Number(this.state.item.priceFrom))}
-                  </Text>
-                </Text>
+                <View style={styles.starContainer}>
+                  <View>
+                    <StarRating
+                      disabled={true}
+                      maxStars={5}
+                      rating={Number(this.state.item.rating)}
+                      fullStarColor={Color.starColor}
+                      emptyStarColor={Color.starColor}
+                      starSize={18}
+                      containerStyle={{justifyContent: 'flex-start'}}
+                      starStyle={{paddingRight: 5}}
+                    />
+                    <Text style={styles.fromText}>
+                      Từ{' '}
+                      <Text style={styles.fromPriceText}>
+                        {formatCurrency(Number(this.state.item.priceFrom))}
+                      </Text>
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.likeBtn}
+                    onPress={() => this.onPressLikeBtn()}>
+                    <Icon
+                      name={this.state.liked ? 'heart' : 'heart-outlined'}
+                      type="Entypo"
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
               <View style={styles.infoContainer}>
                 <Icon
@@ -269,8 +352,16 @@ export default class DetailPage extends React.Component {
                 />
                 <Button
                   rounded
+                  disabled={!this.state.isCanBuy}
                   block
-                  style={styles.bookBtn}
+                  style={[
+                    styles.bookBtn,
+                    {
+                      backgroundColor: this.state.isCanBuy
+                        ? Color.primaryColor
+                        : Color.gray,
+                    },
+                  ]}
                   onPress={() => this.onPressBookBtn()}>
                   <Text style={styles.bookText} uppercase={false}>
                     Đặt vé
@@ -390,7 +481,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
   },
   btnContainer: {
     borderWidth: 1,
@@ -404,5 +494,26 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontFamily: 'Cabin-Regular',
     fontSize: 14,
+  },
+  likeBtn: {
+    width: 30,
+    height: 30,
+    backgroundColor: Color.primaryColor,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    fontSize: 24,
+    color: 'white',
+  },
+  starContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  stopSelling: {
+    fontFamily: 'Cabin-Regular',
+    fontSize: 18,
+    color: 'red',
   },
 });

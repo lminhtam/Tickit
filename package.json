@@ -15,6 +15,7 @@
     "native-base": "^2.13.8",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-action-button": "^2.8.5",
     "react-native-category": "^1.0.4",
     "react-native-device-info": "^5.4.0",
     "react-native-drawer": "^2.5.1",

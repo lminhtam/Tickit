@@ -54,6 +54,7 @@
 		5434AA9BD23646688FAC3B5C /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FEF1B36C4B04B298BD33A7D /* error.png */; };
 		5DF5C519BB8F4D9CB2D44A06 /* success.png in Resources */ = {isa = PBXBuildFile; fileRef = F71C19F0861B4A0C8E7FCF10 /* success.png */; };
 		46823DA331DB42D29BF9EE27 /* no_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = A5A2011AD23244BC9A793C0A /* no_avatar.png */; };
+		54BE184479B14C088124165E /* Card.png in Resources */ = {isa = PBXBuildFile; fileRef = F29B0291027D41089BBE4A8B /* Card.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -127,6 +128,7 @@
 		2FEF1B36C4B04B298BD33A7D /* error.png */ = {isa = PBXFileReference; name = "error.png"; path = "../src/assets/img/error.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		F71C19F0861B4A0C8E7FCF10 /* success.png */ = {isa = PBXFileReference; name = "success.png"; path = "../src/assets/img/success.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		A5A2011AD23244BC9A793C0A /* no_avatar.png */ = {isa = PBXFileReference; name = "no_avatar.png"; path = "../src/assets/img/no_avatar.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F29B0291027D41089BBE4A8B /* Card.png */ = {isa = PBXFileReference; name = "Card.png"; path = "../src/assets/img/Card.png"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +277,7 @@
 				2FEF1B36C4B04B298BD33A7D /* error.png */,
 				F71C19F0861B4A0C8E7FCF10 /* success.png */,
 				A5A2011AD23244BC9A793C0A /* no_avatar.png */,
+				F29B0291027D41089BBE4A8B /* Card.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -454,6 +457,7 @@
 				5434AA9BD23646688FAC3B5C /* error.png in Resources */,
 				5DF5C519BB8F4D9CB2D44A06 /* success.png in Resources */,
 				46823DA331DB42D29BF9EE27 /* no_avatar.png in Resources */,
+				54BE184479B14C088124165E /* Card.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

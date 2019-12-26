@@ -6,6 +6,8 @@ import Color from '../../shared/Color';
 import SearchBarComponent from './components/searchBar';
 import ShowItem from '../Home/components/showItem';
 import Ticket from '../../../firebaseConfig';
+import CustomModal from '../../shared/component/customModal';
+import firebase from 'firebase';
 
 export default class SearchPage extends React.Component {
   constructor(props) {
@@ -14,6 +16,8 @@ export default class SearchPage extends React.Component {
       search: '',
       show: [],
       isLoading: true,
+      liked: [],
+      isShowModal: false,
     };
   }
 
@@ -25,13 +29,45 @@ export default class SearchPage extends React.Component {
       .once('value', snapshot => {
         data = snapshot.val();
       });
-    await this.setState({show: data});
+    if (firebase.auth().currentUser) {
+      await Ticket.database()
+        .ref()
+        .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
+        .once('value', snapshot => {
+          likedShow = snapshot.val();
+          if (likedShow) this.setState({liked: likedShow});
+          else this.setState({liked: []});
+        });
+    } else this.setState({liked: []});
+    await this.setState({show: data, isLoading: false});
   };
 
   componentDidMount() {
     this.readUserData();
-    this.setState({isLoading: false});
+    this._navListener = this.props.navigation.addListener('didFocus', () => {
+      this.readUserData();
+    });
   }
+
+  componentWillUnmount() {
+    this._navListener.remove();
+  }
+
+  onPressLikeBtn = async index => {
+    if (firebase.auth().currentUser) {
+      let likedShow = this.state.liked;
+      let pos = likedShow.indexOf(index);
+      if (pos !== -1) {
+        likedShow.splice(pos, 1);
+      } else likedShow.push(index);
+      await this.setState({liked: likedShow});
+
+      await Ticket.database()
+        .ref()
+        .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
+        .set({liked: this.state.liked});
+    } else this.setState({isShowModal: true});
+  };
 
   filterShow = item => {
     return (
@@ -51,12 +87,14 @@ export default class SearchPage extends React.Component {
     return (
       <ShowItem
         item={item}
+        liked={this.state.liked.indexOf(index) !== -1}
         onPressItem={() =>
           this.props.navigation.navigate('Detail', {
             used: 'Search',
             index: index,
           })
         }
+        onPressLikeBtn={() => this.onPressLikeBtn(index)}
       />
     );
   };
@@ -67,8 +105,18 @@ export default class SearchPage extends React.Component {
       <View style={styles.viewStyle}>
         <SearchBarComponent
           onChangeText={text => this.SearchFilterFunction(text)}
-          placeholder="Nhập tên show"
+          placeholder="Nhập tên sự kiện"
           value={this.state.search}
+        />
+        <CustomModal
+          isModalVisible={this.state.isShowModal}
+          isSuccess={false}
+          text="Bạn chưa đăng nhập. Để nhấn nút 'Yêu thích', vui lòng đăng nhập."
+          btnText="Đăng nhập"
+          onPressBtn={() => {
+            this.setState({isShowModal: false});
+            this.props.navigation.navigate('Login');
+          }}
         />
         {this.state.show && this.state.show.length > 0 ? (
           <FlatList

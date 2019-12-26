@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
   Body,
-  Button,
   Header,
   Left,
   Right,
@@ -25,6 +24,8 @@ import Ticket from '../../../firebaseConfig';
 import {checkCategory} from '../../shared/ultility';
 import Carousel from 'react-native-snap-carousel';
 import {itemWidth, sliderWidth} from '../../shared/ultility';
+import firebase from 'firebase';
+import CustomModal from '../../shared/component/customModal';
 
 export default class HomePage extends React.Component {
   static navigationOptions = {
@@ -34,7 +35,9 @@ export default class HomePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isShowModal: false,
       isLoading: true,
+      liked: [],
       shows: [],
       activeCategory: 0,
       filter: 'Tất cả',
@@ -65,17 +68,35 @@ export default class HomePage extends React.Component {
 
   readUserData = async () => {
     let data = [];
+    let likedShow = [];
     await Ticket.database()
       .ref()
       .child('shows')
       .once('value', snapshot => {
         data = snapshot.val();
       });
+    if (firebase.auth().currentUser) {
+      await Ticket.database()
+        .ref()
+        .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
+        .once('value', snapshot => {
+          likedShow = snapshot.val();
+          if (likedShow) this.setState({liked: likedShow});
+          else this.setState({liked: []});
+        });
+    } else this.setState({liked: []})
     await this.setState({shows: data, isLoading: false});
   };
 
   componentDidMount() {
     this.readUserData();
+    this._navListener = this.props.navigation.addListener('didFocus', () => {
+      this.readUserData();
+    });
+  }
+
+  componentWillUnmount() {
+    this._navListener.remove();
   }
 
   onPressCategory = index => {
@@ -87,6 +108,22 @@ export default class HomePage extends React.Component {
       category: category,
       filter: category[index].title,
     });
+  };
+
+  onPressLikeBtn = async index => {
+    if (firebase.auth().currentUser) {
+      let likedShow = this.state.liked;
+      let pos = likedShow.indexOf(index);
+      if (pos !== -1) {
+        likedShow.splice(pos, 1);
+      } else likedShow.push(index);
+      await this.setState({liked: likedShow});
+
+      await Ticket.database()
+        .ref()
+        .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
+        .set({liked: this.state.liked});
+    } else this.setState({isShowModal: true});
   };
 
   renderCategory = ({item, index}) => (
@@ -110,12 +147,14 @@ export default class HomePage extends React.Component {
     return (
       <ShowItem
         item={item}
+        liked={this.state.liked.indexOf(index) !== -1}
         onPressItem={() => {
           this.props.navigation.navigate('Detail', {
             used: 'Home',
             index: index,
           });
         }}
+        onPressLikeBtn={() => this.onPressLikeBtn(index)}
       />
     );
   };
@@ -125,12 +164,14 @@ export default class HomePage extends React.Component {
     return (
       <ShowRecommendItem
         item={item}
+        liked={this.state.liked.indexOf(index) !== -1}
         onPressItem={() => {
           this.props.navigation.navigate('Detail', {
             used: 'Home',
             index: index,
           });
         }}
+        onPressLikeBtn={() => this.onPressLikeBtn(index)}
       />
     );
   };
@@ -170,6 +211,16 @@ export default class HomePage extends React.Component {
           <Spinner color={Color.primaryColor} />
         ) : (
           <ScrollView style={styles.mainViewStyle}>
+            <CustomModal
+              isModalVisible={this.state.isShowModal}
+              isSuccess={false}
+              text="Bạn chưa đăng nhập. Để nhấn nút 'Yêu thích', vui lòng đăng nhập."
+              btnText="Đăng nhập"
+              onPressBtn={() => {
+                this.setState({isShowModal: false});
+                this.props.navigation.navigate('Login');
+              }}
+            />
             <View>
               <Text style={styles.titleTextStyle}>Dành riêng cho bạn</Text>
               {data && data.length > 0 ? (
@@ -177,6 +228,9 @@ export default class HomePage extends React.Component {
                   ref={c => {
                     this._carousel = c;
                   }}
+                  autoplay
+                  loop
+                  autoplayInterval={2000}
                   data={sortData}
                   renderItem={this.renderRecommendItem}
                   layout={'stack'}
