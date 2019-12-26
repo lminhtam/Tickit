@@ -23,7 +23,7 @@ const list = [
   {
     key: 2,
     title: 'Đã thích',
-    navigation: 'LikedShow',
+    navigation: 'LikedShowSwitch',
   },
   {
     key: 3,
@@ -45,13 +45,14 @@ export default class ProfilePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      fullname: firebase.auth().currentUser.displayName,
+      fullname: 'Chưa có tên',
       email: firebase.auth().currentUser.email,
       imgURL: firebase.auth().currentUser.photoURL,
     };
   }
 
   componentDidMount() {
+    this.setState({fullname: firebase.auth().currentUser.displayName});
     this._navListener = this.props.navigation.addListener('didFocus', () => {
       const user = firebase.auth().currentUser;
       if (user.email !== this.state.email) this.setState({email: user.email});

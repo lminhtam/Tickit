@@ -1,32 +1,49 @@
-import {Button, Text, Card, CardItem} from 'native-base';
+import {Button, Text, Card, CardItem, Icon} from 'native-base';
 import React from 'react';
 import {StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import Color from '../../../shared/Color';
 
 export default class ShowRecommendItem extends React.Component {
   render() {
-    const {item} = this.props
+    const {item} = this.props;
     return (
       <TouchableOpacity
         style={styles.showItem}
         onPress={this.props.onPressItem}>
         <Card>
           <CardItem>
-            <View style={{width: '100%', height: 300}}>
-              <Image
-                source={{uri: item.card}}
-                resizeMode="cover"
-                style={{width: '100%', height: '50%'}}
-              />
+            <View style={{width: '100%', height: 310}}>
+              <View style={{width: '100%', height: 150}}>
+                <Image
+                  source={{uri: item.card}}
+                  resizeMode="cover"
+                  style={{flex: 1}}
+                />
+                <TouchableOpacity
+                  style={styles.likeBtn}
+                  onPress={this.props.onPressLikeBtn}>
+                  <Icon
+                    name={
+                      false || this.props.liked ? 'heart' : 'heart-outlined'
+                    }
+                    type="Entypo"
+                    style={styles.icon}
+                  />
+                </TouchableOpacity>
+              </View>
               <View style={{width: '100%'}}>
-                <Text numberOfLines={2} style={styles.showName}>{item.title}</Text>
-                <Text style={styles.descriptionText}>
-                  {item.category}
+                <Text numberOfLines={2} style={styles.showName}>
+                  {item.title}
                 </Text>
+                <Text style={styles.descriptionText}>{item.category}</Text>
                 <Text style={styles.dateText}>
                   {item.dateNum} Tháng {item.dateMonth} Năm {item.dateYear}
                 </Text>
-                <Button rounded small style={styles.btnStyle}>
+                <Button
+                  rounded
+                  block
+                  style={styles.btnStyle}
+                  onPress={this.props.onPressItem}>
                   <Text uppercase={false} style={styles.btnText}>
                     Đặt vé
                   </Text>
@@ -68,7 +85,6 @@ const styles = StyleSheet.create({
   },
   showItem: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -78,5 +94,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     elevation: 2,
+  },
+  likeBtn: {
+    width: 24,
+    height: 24,
+    margin: 16,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: Color.primaryColor,
+    borderRadius: 50,
+    justifyContent: 'flex-end',
+  },
+  icon: {
+    fontSize: 20,
+    color: 'white',
+    position: 'absolute',
+    bottom: 0,
+    right: -10,
   },
 });

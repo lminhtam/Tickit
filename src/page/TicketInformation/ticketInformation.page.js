@@ -11,7 +11,8 @@ import {Text, Button, Icon} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import Ticket from '../../../firebaseConfig';
-import {formatCurrency} from '../../shared/ultility';
+import {formatCurrency, generateUID} from '../../shared/ultility';
+import firebase from 'firebase';
 
 export default class TicketInformationPage extends React.Component {
   static navigationOptions = {
@@ -23,6 +24,7 @@ export default class TicketInformationPage extends React.Component {
     this.state = {
       item: {},
       total: 0,
+      totalQuantity: 0,
       user: this.props.navigation.getParam('user'),
       quantityTicket: [],
     };
@@ -43,14 +45,50 @@ export default class TicketInformationPage extends React.Component {
     await this.setState({quantityTicket: quantity});
 
     var total = 0;
-    for (let i = 0; i < quantity.length; i++)
+    var totalQuantity = 0;
+    for (let i = 0; i < quantity.length; i++) {
       total += Number(quantity[i].price) * quantity[i].quantity;
-    await this.setState({total: total});
+      totalQuantity += quantity[i].quantity;
+    }
+    await this.setState({total: total, totalQuantity: totalQuantity});
   };
 
   componentDidMount() {
     this.getItem();
   }
+
+  onPressBookTickets = async () => {
+    let today = new Date();
+    let todayString =
+      today.getDate() +
+      '-' +
+      (today.getMonth() + 1).toString() +
+      '-' +
+      today.getFullYear();
+    let id = generateUID().toUpperCase();
+    await Ticket.database()
+      .ref()
+      .child(
+        'users/' + firebase.auth().currentUser.uid + '/bookedTickets/' + id,
+      )
+      .set({
+        showIndex: this.props.navigation.getParam('itemIndex'),
+        showName: this.state.item.title,
+        dateBooked: todayString,
+        totalPrice: this.state.total,
+        totalQuantity: this.state.totalQuantity,
+        quantityTicket: this.props.navigation.getParam('quantityTicket'),
+        bookedPerson: this.state.user.fullname,
+        phoneNumber: this.state.user.phoneNumber,
+        personalID: this.state.user.id,
+      })
+      .then(() =>
+        this.props.navigation.navigate('TicketDetail', {
+          ticketId: id,
+          used: 'home',
+        }),
+      );
+  };
 
   render() {
     return (
@@ -131,16 +169,7 @@ export default class TicketInformationPage extends React.Component {
             rounded
             block
             style={styles.bookBtn}
-            onPress={() =>
-              this.props.navigation.navigate('TicketDetail', {
-                used: 'home',
-                itemIndex: this.props.navigation.getParam('itemIndex'),
-                user: this.props.navigation.getParam('user'),
-                quantityTicket: this.props.navigation.getParam(
-                  'quantityTicket',
-                ),
-              })
-            }>
+            onPress={() => this.onPressBookTickets()}>
             <Text style={styles.bookText} uppercase={false}>
               Thanh toán
             </Text>

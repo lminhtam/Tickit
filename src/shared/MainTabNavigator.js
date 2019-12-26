@@ -52,7 +52,7 @@ const HomeSwitch = createSwitchNavigator(
   },
 );
 
-const SearchSwitch = createStackNavigator(
+const SearchSwitch = createSwitchNavigator(
   {
     Search: SearchPage,
     BookingStackSearch: BookingStack,
@@ -79,6 +79,17 @@ const LoginStack = createStackNavigator(
   },
 );
 
+const LikedShowSwitch = createSwitchNavigator(
+  {
+    LikedShow: LikedShowPage,
+    BookingStackLiked: BookingStack,
+  },
+  {
+    headerMode: 'none',
+    initialRouteName: 'LikedShow',
+  },
+);
+
 const ProfileStack = createStackNavigator(
   {
     ProfilePage: ProfilePage,
@@ -88,7 +99,7 @@ const ProfileStack = createStackNavigator(
     ChangeInformation: ChangeInformationPage,
     ChangeAvatar: ChangeAvatarPage,
     Payment: PaymentPage,
-    LikedShow: LikedShowPage,
+    LikedShowSwitch: LikedShowSwitch,
   },
   {
     headerMode: 'none',

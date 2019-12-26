@@ -7,6 +7,7 @@ import CustomHeader from '../../shared/component/customHeader';
 import {StackActions} from 'react-navigation';
 import Ticket from '../../../firebaseConfig';
 import firebase from 'firebase';
+import CustomModal from '../../shared/component/customModal';
 
 const popAction = StackActions.pop({
   n: 3,
@@ -22,36 +23,53 @@ export default class TicketDetailPage extends React.Component {
     this.state = {
       used: this.props.navigation.getParam('used'),
       item: {},
-      user: this.props.navigation.getParam('user'),
-      quantity: this.props.navigation.getParam('quantityTicket'),
       qrValue: ' ',
+      ticket: {},
+      canCancel: true,
+      isError: false,
     };
   }
 
   getItem = async () => {
-    let index = this.props.navigation.getParam('itemIndex');
+    let ticketId = this.props.navigation.getParam('ticketId');
     let data = {};
     await Ticket.database()
-      .ref('shows')
-      .child(index)
-      .on('value', snapshot => {
+      .ref('users/' + firebase.auth().currentUser.uid + '/bookedTickets')
+      .child(ticketId)
+      .once('value', snapshot => {
         data = snapshot.val();
-        this.setState({item: data});
-      });
-
-    const quantity = this.props.navigation.getParam('quantityTicket');
-    let qrValue = data.title + '\n\n';
-    for (let i = 0; i < quantity.length; i++) {
-      if (quantity[i].quantity > 0)
-        qrValue +=
-          'Loại: ' +
-          quantity[i].type +
-          '\nSố lượng: ' +
-          quantity[i].quantity.toString() +
-          '\n\n';
-    }
-    qrValue += this.state.user.fullname;
-    this.setState({qrValue: qrValue});
+        this.setState({ticket: data});
+        const quantity = data.quantityTicket;
+        let qrValue = 'ID: ' + ticketId + '\n' + data.showName + '\n\n';
+        for (let i = 0; i < quantity.length; i++) {
+          if (quantity[i].quantity > 0)
+            qrValue +=
+              'Loại: ' +
+              quantity[i].type +
+              '\nSố lượng: ' +
+              quantity[i].quantity.toString() +
+              '\n\n';
+        }
+        qrValue += 'Người đặt: ' + data.bookedPerson;
+        this.setState({qrValue: qrValue});
+      })
+      .then(() =>
+        Ticket.database()
+          .ref('shows')
+          .child(data.showIndex)
+          .once('value', snapshot => {
+            let show = snapshot.val();
+            this.setState({item: show});
+            let showDay = new Date(
+              Number(show.dateYear),
+              Number(show.dateMonth) - 1,
+              Number(show.dateNum) - 1,
+            );
+            let canCancel = showDay.getTime() > new Date().getTime();
+            this.setState({canCancel: canCancel});
+          }),
+      )
+      .catch(error => this.onPressBack());
   };
 
   componentDidMount() {
@@ -63,6 +81,19 @@ export default class TicketDetailPage extends React.Component {
     else this.props.navigation.goBack();
   };
 
+  onPressCancel = async () => {
+    let ticketId = this.props.navigation.getParam('ticketId');
+    await Ticket.database()
+      .ref(
+        'users/' +
+          firebase.auth().currentUser.uid +
+          '/bookedTickets/' +
+          ticketId,
+      )
+      .remove(() => this.onPressBack())
+      .catch(error => this.setState({isError: true}));
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -72,6 +103,13 @@ export default class TicketDetailPage extends React.Component {
           onPressBtnLeft={() => this.onPressBack()}
         />
         <ScrollView style={{backgroundColor: '#AC73E480'}}>
+          <CustomModal
+            isModalVisible={this.state.isError}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra. Vui lòng thử lại vào lúc khác"
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isError: false})}
+          />
           <View style={styles.ticketContainer}>
             <View>
               <Image
@@ -102,7 +140,19 @@ export default class TicketDetailPage extends React.Component {
               <QRCode value={this.state.qrValue} />
             </View>
           </View>
-          <Button rounded block style={styles.bookBtn}>
+          <Button
+            rounded
+            block
+            disabled={!this.state.canCancel}
+            onPress={() => this.onPressCancel()}
+            style={[
+              styles.bookBtn,
+              {
+                backgroundColor: this.state.canCancel
+                  ? Color.primaryColor
+                  : Color.gray,
+              },
+            ]}>
             <Text style={styles.bookText} uppercase={false}>
               Hủy vé
             </Text>

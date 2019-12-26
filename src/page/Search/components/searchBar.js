@@ -23,7 +23,7 @@ class SearchBarComponent extends React.Component {
         <SearchBar
           lightTheme
           round
-          placeholder="Nhập tên show"
+          placeholder="Nhập tên sự kiện"
           onChangeText={text => this.updateSearch(text)}
           inputContainerStyle={styles.searchbar}
           containerStyle={styles.searchcontainer}

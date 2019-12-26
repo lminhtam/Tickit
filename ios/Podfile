@@ -36,6 +36,10 @@ target 'Tickit' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-fetch-blob', :path => '../node_modules/react-native-fetch-blob'
+
+  pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
+
   target 'TickitTests' do
     inherit! :search_paths
     # Pods for testing
