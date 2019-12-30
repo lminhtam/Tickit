@@ -29,12 +29,6 @@ export default class ChangeInformationPage extends React.Component {
       .label('Email')
       .email('Email hiện tại không hợp lệ')
       .required('* Vui lòng nhập email'),
-    // password: yup
-    //   .string()
-    //   .required('* Vui lòng nhập mật khẩu')
-    //   .matches(/(?=.{8,})/, {
-    //     message: 'Mật khẩu phải gồm 8 kí tự',
-    //   }),
     fullname: yup
       .string()
       .trim()
@@ -64,6 +58,11 @@ export default class ChangeInformationPage extends React.Component {
         )
         .catch(error => this.setState({isError: true}));
     }
+  };
+
+  inputs = {};
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
   };
 
   render() {
@@ -132,6 +131,11 @@ export default class ChangeInformationPage extends React.Component {
                         onChangeText={handleChange('fullname')}
                         onBlur={handleBlur('fullname')}
                         value={values.fullname}
+                        blurOnSubmit={false}
+                        returnKeyType={'next'}
+                        onSubmitEditing={() => {
+                          this.focusTheField('email');
+                        }}
                       />
                     </Item>
                     {touched.fullname && errors.fullname && (
@@ -146,26 +150,14 @@ export default class ChangeInformationPage extends React.Component {
                         onChangeText={handleChange('email')}
                         onBlur={handleBlur('email')}
                         value={values.email}
+                        getRef={input => {
+                          this.inputs['email'] = input;
+                        }}
                       />
                     </Item>
                     {touched.email && errors.email && (
                       <Text style={styles.errorText}>{errors.email}</Text>
                     )}
-                    {/* <Item floatingLabel>
-                      <Label style={styles.input}>Mật khẩu</Label>
-                      <Input
-                        secureTextEntry={true}
-                        placeholder="Mật khẩu"
-                        style={styles.input}
-                        onTouchStart={() => setFieldTouched('password')}
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        value={values.password}
-                      />
-                    </Item>
-                    {touched.password && errors.password && (
-                      <Text style={styles.errorText}>{errors.password}</Text>
-                    )} */}
                   </Form>
                   <Button
                     style={[

@@ -18,6 +18,11 @@ export default class BookingPage extends React.Component {
     super(props);
   }
 
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
+
   validationSchema = yup.object().shape({
     email: yup
       .string()
@@ -73,7 +78,7 @@ export default class BookingPage extends React.Component {
                 quantityTicket: this.props.navigation.getParam(
                   'ticketQuantity',
                 ),
-                itemIndex: this.props.navigation.getParam('itemIndex')
+                itemIndex: this.props.navigation.getParam('itemIndex'),
               });
             }}>
             {({
@@ -95,6 +100,11 @@ export default class BookingPage extends React.Component {
                     onChangeText={handleChange('fullname')}
                     onBlur={handleBlur('fullname')}
                     value={values.fullname}
+                    blurOnSubmit={false}
+                    returnKeyType={'next'}
+                    onSubmitEditing={() => {
+                      this.focusTheField('phoneNumber');
+                    }}
                   />
                   {touched.fullname && errors.fullname && (
                     <Text style={styles.errorText}>{errors.fullname}</Text>
@@ -106,6 +116,14 @@ export default class BookingPage extends React.Component {
                     onChangeText={handleChange('phoneNumber')}
                     onBlur={handleBlur('phoneNumber')}
                     value={values.phoneNumber}
+                    blurOnSubmit={false}
+                    returnKeyType={'next'}
+                    onSubmitEditing={() => {
+                      this.focusTheField('email');
+                    }}
+                    getRef={input => {
+                      this.inputs['phoneNumber'] = input;
+                    }}
                   />
                   {touched.phoneNumber && errors.phoneNumber && (
                     <Text style={styles.errorText}>{errors.phoneNumber}</Text>
@@ -117,6 +135,14 @@ export default class BookingPage extends React.Component {
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
                     value={values.email}
+                    blurOnSubmit={false}
+                    returnKeyType={'next'}
+                    onSubmitEditing={() => {
+                      this.focusTheField('id');
+                    }}
+                    getRef={input => {
+                      this.inputs['email'] = input;
+                    }}
                   />
                   {touched.email && errors.email && (
                     <Text style={styles.errorText}>{errors.email}</Text>
@@ -128,6 +154,9 @@ export default class BookingPage extends React.Component {
                     onChangeText={handleChange('id')}
                     onBlur={handleBlur('id')}
                     value={values.id}
+                    getRef={input => {
+                      this.inputs['id'] = input;
+                    }}
                   />
                   {touched.id && errors.id && (
                     <Text style={styles.errorText}>{errors.id}</Text>
