@@ -48,11 +48,15 @@ export default class LikedShowPage extends React.Component {
   }
 
   onPressLikeBtn = async index => {
+    console.log(this.state.show);
+    console.log(index);
     let likedShow = this.state.liked;
     let pos = likedShow.indexOf(index);
+    console.log(pos);
     if (pos !== -1) {
       likedShow.splice(pos, 1);
     } else likedShow.push(index);
+    console.log(likedShow);
     await Ticket.database()
       .ref()
       .child('users/' + firebase.auth().currentUser.uid + '/likedShow')

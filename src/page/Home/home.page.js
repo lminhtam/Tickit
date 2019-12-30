@@ -79,7 +79,7 @@ export default class HomePage extends React.Component {
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
-        .once('value', snapshot => {
+        .on('value', snapshot => {
           likedShow = snapshot.val();
           if (likedShow) this.setState({liked: likedShow});
           else this.setState({liked: []});
@@ -90,14 +90,14 @@ export default class HomePage extends React.Component {
 
   componentDidMount() {
     this.readUserData();
-    this._navListener = this.props.navigation.addListener('didFocus', () => {
-      this.readUserData();
-    });
+    // this._navListener = this.props.navigation.addListener('didFocus', () => {
+    //   this.readUserData();
+    // });
   }
 
-  componentWillUnmount() {
-    this._navListener.remove();
-  }
+  // componentWillUnmount() {
+  //   this._navListener.remove();
+  // }
 
   onPressCategory = index => {
     let category = this.state.category;

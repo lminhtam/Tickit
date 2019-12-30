@@ -73,14 +73,12 @@ export default class DetailPage extends React.Component {
     if (firebase.auth().currentUser) {
       await Ticket.database()
         .ref()
-        .child(
-          'users/' +
-            firebase.auth().currentUser.uid +
-            '/likedShow/liked/' +
-            index.toString(),
-        )
+        .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
         .on('value', snapshot => {
-          if (snapshot.val()) this.setState({liked: true});
+          if (snapshot.exists()) {
+            let liked = snapshot.val().indexOf(index) !== -1
+            this.setState({liked: liked});
+          }            
         });
     }
     await this.setState({
