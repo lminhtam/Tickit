@@ -24,6 +24,7 @@ export default class LoginPage extends React.Component {
       isWrongPassword: false,
       isNotHaveAccount: false,
       isHaveAccount: false,
+      isError: false,
     };
   }
 
@@ -63,7 +64,6 @@ export default class LoginPage extends React.Component {
     LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       value => {
         if (value.isCancelled) {
-          console.log('Login cancelled');
         } else {
           AccessToken.getCurrentAccessToken().then(data => {
             const credential = firebase.auth.FacebookAuthProvider.credential(
@@ -111,13 +111,12 @@ export default class LoginPage extends React.Component {
         .then(() => {});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('Cancelled sign up');
       } else if (error.code === statusCodes.IN_PROGRESS) {
         this.setState({isHaveAccount: true});
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('Play service is not available');
+        // console.log('Play service is not available');
       } else {
-        console.log('Unknown error');
+        this.setState({isError: true});
       }
     }
   };
@@ -137,6 +136,13 @@ export default class LoginPage extends React.Component {
             onPressBtn={() => {
               this.setState({isHaveAccount: false});
             }}
+          />
+          <CustomModal
+            isModalVisible={this.state.isError}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra. Vui lòng nhấn quay lại và thử lại."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isError: false})}
           />
           <CustomModal
             isModalVisible={this.state.isNotHaveAccount}
