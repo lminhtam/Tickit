@@ -1,7 +1,7 @@
 import React from 'react';
 import {SafeAreaView, StyleSheet, ScrollView, View} from 'react-native';
 
-import {Text, Button, Input} from 'native-base';
+import {Text, Button, Input, Form, Item} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import {SCREEN_WIDTH} from '../../shared/ultility';
@@ -17,6 +17,11 @@ export default class BookingPage extends React.Component {
   constructor(props) {
     super(props);
   }
+
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
 
   validationSchema = yup.object().shape({
     email: yup
@@ -73,7 +78,7 @@ export default class BookingPage extends React.Component {
                 quantityTicket: this.props.navigation.getParam(
                   'ticketQuantity',
                 ),
-                itemIndex: this.props.navigation.getParam('itemIndex')
+                itemIndex: this.props.navigation.getParam('itemIndex'),
               });
             }}>
             {({
@@ -88,50 +93,80 @@ export default class BookingPage extends React.Component {
             }) => {
               return (
                 <View>
-                  <Input
-                    style={styles.infoItem}
-                    placeholder="Họ và tên"
-                    onTouchStart={() => setFieldTouched('fullname')}
-                    onChangeText={handleChange('fullname')}
-                    onBlur={handleBlur('fullname')}
-                    value={values.fullname}
-                  />
-                  {touched.fullname && errors.fullname && (
-                    <Text style={styles.errorText}>{errors.fullname}</Text>
-                  )}
-                  <Input
-                    style={styles.infoItem}
-                    placeholder="Số điện thoại"
-                    onTouchStart={() => setFieldTouched('phoneNumber')}
-                    onChangeText={handleChange('phoneNumber')}
-                    onBlur={handleBlur('phoneNumber')}
-                    value={values.phoneNumber}
-                  />
-                  {touched.phoneNumber && errors.phoneNumber && (
-                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-                  )}
-                  <Input
-                    style={styles.infoItem}
-                    placeholder="Email"
-                    onTouchStart={() => setFieldTouched('email')}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                  />
-                  {touched.email && errors.email && (
-                    <Text style={styles.errorText}>{errors.email}</Text>
-                  )}
-                  <Input
-                    style={styles.infoItem}
-                    placeholder="CMND"
-                    onTouchStart={() => setFieldTouched('id')}
-                    onChangeText={handleChange('id')}
-                    onBlur={handleBlur('id')}
-                    value={values.id}
-                  />
-                  {touched.id && errors.id && (
-                    <Text style={styles.errorText}>{errors.id}</Text>
-                  )}
+                  <Form>
+                    <Input
+                      style={styles.infoItem}
+                      placeholder="Họ và tên"
+                      onFocus={() => setFieldTouched('fullname')}
+                      onTouchStart={() => setFieldTouched('fullname')}
+                      onChangeText={handleChange('fullname')}
+                      onBlur={handleBlur('fullname')}
+                      value={values.fullname}
+                      blurOnSubmit={false}
+                      returnKeyType={'next'}
+                      onSubmitEditing={() => {
+                        this.focusTheField('phoneNumber');
+                      }}
+                    />
+                    {touched.fullname && errors.fullname && (
+                      <Text style={styles.errorText}>{errors.fullname}</Text>
+                    )}
+                    <Input
+                      style={styles.infoItem}
+                      placeholder="Số điện thoại"
+                      onTouchStart={() => setFieldTouched('phoneNumber')}
+                      onChangeText={handleChange('phoneNumber')}
+                      onFocus={() => setFieldTouched('phoneNumber')}
+                      onBlur={handleBlur('phoneNumber')}
+                      value={values.phoneNumber}
+                      blurOnSubmit={false}
+                      returnKeyType={'next'}
+                      onSubmitEditing={() => {
+                        this.focusTheField('email');
+                      }}
+                      ref={input => {
+                        this.inputs['phoneNumber'] = input;
+                      }}
+                    />
+                    {touched.phoneNumber && errors.phoneNumber && (
+                      <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                    )}
+                    <Input
+                      style={styles.infoItem}
+                      placeholder="Email"
+                      onTouchStart={() => setFieldTouched('email')}
+                      onFocus={() => setFieldTouched('email')}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      value={values.email}
+                      blurOnSubmit={false}
+                      returnKeyType={'next'}
+                      onSubmitEditing={() => {
+                        this.focusTheField('id');
+                      }}
+                      ref={input => {
+                        this.inputs['email'] = input;
+                      }}
+                    />
+                    {touched.email && errors.email && (
+                      <Text style={styles.errorText}>{errors.email}</Text>
+                    )}
+                    <Input
+                      style={styles.infoItem}
+                      placeholder="CMND"
+                      onTouchStart={() => setFieldTouched('id')}
+                      onFocus={() => setFieldTouched('id')}
+                      onChangeText={handleChange('id')}
+                      onBlur={handleBlur('id')}
+                      value={values.id}
+                      ref={input => {
+                        this.inputs['id'] = input;
+                      }}
+                    />
+                    {touched.id && errors.id && (
+                      <Text style={styles.errorText}>{errors.id}</Text>
+                    )}
+                  </Form>
                   <Button
                     rounded
                     block

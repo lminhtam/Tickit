@@ -40,6 +40,11 @@ export default class LoginPage extends React.Component {
     });
   }
 
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
+
   validationSchema = yup.object().shape({
     email: yup
       .string()
@@ -174,6 +179,11 @@ export default class LoginPage extends React.Component {
                           onChangeText={handleChange('email')}
                           onBlur={handleBlur('email')}
                           value={values.email}
+                          blurOnSubmit={false}
+                          returnKeyType={'next'}
+                          onSubmitEditing={() => {
+                            this.focusTheField('password');
+                          }}
                         />
                       </Item>
                       {touched.email && errors.email && (
@@ -189,6 +199,9 @@ export default class LoginPage extends React.Component {
                           onChangeText={handleChange('password')}
                           onBlur={handleBlur('password')}
                           value={values.password}
+                          getRef={input => {
+                            this.inputs['password'] = input;
+                          }}
                         />
                       </Item>
                       {touched.password && errors.password && (

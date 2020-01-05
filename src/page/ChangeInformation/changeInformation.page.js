@@ -20,8 +20,14 @@ export default class ChangeInformationPage extends React.Component {
       isEmailError: false,
       isError: false,
       isDone: false,
+      hasNotChanged: false,
     };
   }
+
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
 
   validationSchema = yup.object().shape({
     email: yup
@@ -29,12 +35,6 @@ export default class ChangeInformationPage extends React.Component {
       .label('Email')
       .email('Email hiện tại không hợp lệ')
       .required('* Vui lòng nhập email'),
-    // password: yup
-    //   .string()
-    //   .required('* Vui lòng nhập mật khẩu')
-    //   .matches(/(?=.{8,})/, {
-    //     message: 'Mật khẩu phải gồm 8 kí tự',
-    //   }),
     fullname: yup
       .string()
       .trim()
@@ -63,7 +63,7 @@ export default class ChangeInformationPage extends React.Component {
             .catch(error => this.setState({isEmailError: true})),
         )
         .catch(error => this.setState({isError: true}));
-    }
+    } else this.setState({hasNotChanged: true});
   };
 
   render() {
@@ -93,6 +93,13 @@ export default class ChangeInformationPage extends React.Component {
             onPressBtn={() => this.setState({isError: false})}
           />
           <CustomModal
+            isModalVisible={this.state.hasNotChanged}
+            isSuccess={false}
+            text="Bạn chưa đổi thông tin. Nhấn quay lại để thay đổi tiếp."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({hasNotChanged: false})}
+          />
+          <CustomModal
             isModalVisible={this.state.isDone}
             isSuccess={true}
             text="Đã đổi thông tin thành công."
@@ -105,7 +112,6 @@ export default class ChangeInformationPage extends React.Component {
           <Formik
             initialValues={{
               email: user.email,
-              password: '',
               fullname: user.displayName,
             }}
             validationSchema={this.validationSchema}
@@ -132,6 +138,11 @@ export default class ChangeInformationPage extends React.Component {
                         onChangeText={handleChange('fullname')}
                         onBlur={handleBlur('fullname')}
                         value={values.fullname}
+                        blurOnSubmit={false}
+                        returnKeyType={'next'}
+                        onSubmitEditing={() => {
+                          this.focusTheField('email');
+                        }}
                       />
                     </Item>
                     {touched.fullname && errors.fullname && (
@@ -146,26 +157,14 @@ export default class ChangeInformationPage extends React.Component {
                         onChangeText={handleChange('email')}
                         onBlur={handleBlur('email')}
                         value={values.email}
+                        getRef={input => {
+                          this.inputs['email'] = input;
+                        }}
                       />
                     </Item>
                     {touched.email && errors.email && (
                       <Text style={styles.errorText}>{errors.email}</Text>
                     )}
-                    {/* <Item floatingLabel>
-                      <Label style={styles.input}>Mật khẩu</Label>
-                      <Input
-                        secureTextEntry={true}
-                        placeholder="Mật khẩu"
-                        style={styles.input}
-                        onTouchStart={() => setFieldTouched('password')}
-                        onChangeText={handleChange('password')}
-                        onBlur={handleBlur('password')}
-                        value={values.password}
-                      />
-                    </Item>
-                    {touched.password && errors.password && (
-                      <Text style={styles.errorText}>{errors.password}</Text>
-                    )} */}
                   </Form>
                   <Button
                     style={[

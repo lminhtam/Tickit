@@ -39,6 +39,11 @@ export default class SignUpPage extends React.Component {
     });
   }
 
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
+
   validationSchema = yup.object().shape({
     email: yup
       .string()
@@ -217,6 +222,11 @@ export default class SignUpPage extends React.Component {
                         onChangeText={handleChange('fullname')}
                         onBlur={handleBlur('fullname')}
                         value={values.fullname}
+                        blurOnSubmit={false}
+                        returnKeyType={'next'}
+                        onSubmitEditing={() => {
+                          this.focusTheField('email');
+                        }}
                       />
                     </Item>
                     {touched.fullname && errors.fullname && (
@@ -231,6 +241,14 @@ export default class SignUpPage extends React.Component {
                         onChangeText={handleChange('email')}
                         onBlur={handleBlur('email')}
                         value={values.email}
+                        blurOnSubmit={false}
+                        returnKeyType={'next'}
+                        onSubmitEditing={() => {
+                          this.focusTheField('password');
+                        }}
+                        getRef={input => {
+                          this.inputs['email'] = input;
+                        }}
                       />
                     </Item>
                     {touched.email && errors.email && (
@@ -246,6 +264,9 @@ export default class SignUpPage extends React.Component {
                         onChangeText={handleChange('password')}
                         onBlur={handleBlur('password')}
                         value={values.password}
+                        getRef={input => {
+                          this.inputs['password'] = input;
+                        }}
                       />
                     </Item>
                     {touched.password && errors.password && (
