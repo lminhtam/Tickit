@@ -82,7 +82,7 @@ export default class SignUpPage extends React.Component {
             fullname: firebase.auth().currentUser.displayName,
             email: firebase.auth().currentUser.email,
           });
-        this.props.navigation.navigate('Profile');
+        this.props.navigation.navigate('ProfileStack');
       })
       .catch(error => {});
   };
@@ -157,7 +157,7 @@ export default class SignUpPage extends React.Component {
               fullname: firebase.auth().currentUser.displayName,
               email: firebase.auth().currentUser.email,
             });
-          this.props.navigation.navigate('Profile');
+          this.props.navigation.navigate('ProfileStack');
         });
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {

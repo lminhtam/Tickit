@@ -18,7 +18,7 @@ export default class LoadingPage extends React.Component {
           .child('users')
           .once('value', snapshot => {
             if (snapshot.hasChild(firebase.auth().currentUser.uid)) {
-              this.props.navigation.navigate('Profile');
+              this.props.navigation.navigate('ProfileStack');
             } else {
               this.props.navigation.navigate('SignUp', {
                 isNotHaveAccount: true,

@@ -13,6 +13,7 @@ import CustomHeader from '../../shared/component/customHeader';
 import Ticket from '../../../firebaseConfig';
 import {formatCurrency, generateUID} from '../../shared/ultility';
 import firebase from 'firebase';
+import ConfirmModal from '../../shared/component/confirmModal';
 
 export default class TicketInformationPage extends React.Component {
   static navigationOptions = {
@@ -27,6 +28,7 @@ export default class TicketInformationPage extends React.Component {
       totalQuantity: 0,
       user: this.props.navigation.getParam('user'),
       quantityTicket: [],
+      confirm: false,
     };
   }
 
@@ -82,12 +84,13 @@ export default class TicketInformationPage extends React.Component {
         phoneNumber: this.state.user.phoneNumber,
         personalID: this.state.user.id,
       })
-      .then(() =>
+      .then(() => {
+        this.setState({confirm: false});
         this.props.navigation.navigate('TicketDetail', {
           ticketId: id,
           used: 'home',
-        }),
-      );
+        });
+      });
   };
 
   render() {
@@ -99,6 +102,14 @@ export default class TicketInformationPage extends React.Component {
           onPressBtnLeft={() => this.props.navigation.goBack()}
         />
         <ScrollView style={{backgroundColor: '#AC73E480'}}>
+          <ConfirmModal
+            isModalVisible={this.state.confirm}
+            text="Xác nhận thanh toán?"
+            btnCancelText="Quay lại"
+            onPressCancelBtn={() => this.setState({confirm: false})}
+            btnAgreeText="Thanh toán"
+            onPressAgreeBtn={() => this.onPressBookTickets()}
+          />
           <View style={styles.ticketContainer}>
             <View>
               <Image
@@ -169,7 +180,7 @@ export default class TicketInformationPage extends React.Component {
             rounded
             block
             style={styles.bookBtn}
-            onPress={() => this.onPressBookTickets()}>
+            onPress={() => this.setState({confirm: true})}>
             <Text style={styles.bookText} uppercase={false}>
               Thanh toán
             </Text>

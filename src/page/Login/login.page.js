@@ -89,7 +89,7 @@ export default class LoginPage extends React.Component {
     firebase
       .auth()
       .signInWithEmailAndPassword(values.email, values.password)
-      .then(() => this.props.navigation.navigate('Profile'))
+      .then(() => this.props.navigation.navigate('ProfileStack'))
       .catch(error => {
         if (error.code === 'auth/user-not-found')
           this.setState({isNotHaveAccount: true});
@@ -143,7 +143,11 @@ export default class LoginPage extends React.Component {
             isSuccess={false}
             text="Bạn chưa có tài khoản. Vui lòng nhấn nút đăng ký."
             btnText="Đăng ký"
-            onPressBtn={() => this.props.navigation.navigate('SignUp')}
+            onPressBtn={() =>
+              this.props.navigation.navigate('SignUp', {
+                isNotHaveAccount: false,
+              })
+            }
           />
           <CustomModal
             isModalVisible={this.state.isWrongPassword}

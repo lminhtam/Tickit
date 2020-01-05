@@ -28,7 +28,7 @@ export default class DetailPage extends React.Component {
     this.state = {
       used: '',
       index: this.props.navigation.getParam('index'),
-      item: {},
+      item: {price: 0},
       liked: false,
       quantityTicket: [],
       description: '',
@@ -74,11 +74,11 @@ export default class DetailPage extends React.Component {
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
-        .on('value', snapshot => {
+        .once('value', snapshot => {
           if (snapshot.exists()) {
-            let liked = snapshot.val().indexOf(index) !== -1
+            let liked = snapshot.val().indexOf(index) !== -1;
             this.setState({liked: liked});
-          }            
+          }
         });
     }
     await this.setState({
@@ -309,11 +309,7 @@ export default class DetailPage extends React.Component {
                     style={styles.likeBtn}
                     onPress={() => this.onPressLikeBtn()}>
                     <Icon
-                      name={
-                        false || this.props.liked
-                          ? 'ios-heart'
-                          : 'ios-heart-empty'
-                      }
+                      name={this.state.liked ? 'ios-heart' : 'ios-heart-empty'}
                       type="Ionicons"
                       style={styles.icon}
                     />
