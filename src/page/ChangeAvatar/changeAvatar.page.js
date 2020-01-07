@@ -1,12 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Button, Text} from 'native-base';
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Image,
-} from 'react-native';
+import {ScrollView, StyleSheet, View, Image} from 'react-native';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import firebase from 'firebase';
@@ -44,46 +39,54 @@ export default class ChangeAvatarPage extends React.Component {
       imgName: 'default',
       isError: false,
       isDone: false,
+      hasNotChanged: false,
     };
   }
 
-  uploadImage(uri, mime = 'application/octet-stream') {
-    return new Promise((resolve, reject) => {
-      const uploadUri =
-        Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-      let uploadBlob = null;
+  uploadImage = (uri, mime = 'application/octet-stream') => {
+    if (uri == firebase.auth().currentUser.photoURL) {
+      this.setState({hasNotChanged: true});
+      return;
+    }
+    const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+    let uploadBlob = null;
 
-      const imageRef = Ticket.storage()
-        .ref(firebase.auth().currentUser.uid)
-        .child(this.state.imgName);
+    Ticket.storage()
+      .ref(firebase.auth().currentUser.uid)
+      .child(this.state.imgName)
+      .getDownloadURL()
+      .then(value => {
+        this.setState({isDone: true});
+        firebase.auth().currentUser.updateProfile({photoURL: value});
+      })
+      .catch(async error => {
+        const imageRef = await Ticket.storage()
+          .ref(firebase.auth().currentUser.uid)
+          .child(this.state.imgName);
 
-      fs.readFile(uploadUri, 'base64')
-        .then(data => {
-          return Blob.build(data, {type: `${mime};BASE64`});
-        })
-        .then(blob => {
-          uploadBlob = blob;
-          return imageRef.put(blob, {contentType: mime});
-        })
-        .then(() => {
-          uploadBlob.close();
-          return imageRef.getDownloadURL();
-        })
-        .then(url => {
-          firebase.auth().currentUser.updateProfile({photoURL: url});
-          resolve(url);
-          this.setState({isDone: true})
-        })
-        .catch(error => {
-          reject(error);
-        });
-    });
-  }
+        fs.readFile(uploadUri, 'base64')
+          .then(data => {
+            return Blob.build(data, {type: `${mime};BASE64`});
+          })
+          .then(blob => {
+            uploadBlob = blob;
+            return imageRef.put(blob, {contentType: mime});
+          })
+          .then(() => {
+            uploadBlob.close();
+            return imageRef.getDownloadURL();
+          })
+          .then(url => {
+            this.setState({isDone: true});
+            firebase.auth().currentUser.updateProfile({photoURL: url});
+          })
+          .catch(error => this.setState({isError: true}));
+      });
+  };
 
   getImage = async () => {
     ImagePicker.showImagePicker(options, response => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
       } else if (response.error) {
         tthis.setState({isError: true});
       } else {
@@ -109,6 +112,13 @@ export default class ChangeAvatarPage extends React.Component {
             text="Đã có lỗi xảy ra. Vui lòng nhấn quay lại và thử lại."
             btnText="Quay lại"
             onPressBtn={() => this.setState({isError: false})}
+          />
+          <CustomModal
+            isModalVisible={this.state.hasNotChanged}
+            isSuccess={false}
+            text="Bạn chưa tải ảnh mới lên. Nhấn quay lại để tải ảnh mới."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({hasNotChanged: false})}
           />
           <CustomModal
             isModalVisible={this.state.isDone}

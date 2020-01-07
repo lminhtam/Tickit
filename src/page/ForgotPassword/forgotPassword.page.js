@@ -18,6 +18,7 @@ export default class ForgotPasswordPage extends React.Component {
     super(props);
     this.state = {
       isNotHaveAccount: false,
+      isError: false,
     };
   }
 
@@ -40,7 +41,7 @@ export default class ForgotPasswordPage extends React.Component {
             this.setState({isNotHaveAccount: true});
         });
     } catch (error) {
-      console.log(error);
+      this.setState({isError: true});
     }
   };
 
@@ -66,6 +67,13 @@ export default class ForgotPasswordPage extends React.Component {
                 isNotHaveAccount: false,
               });
             }}
+          />
+          <CustomModal
+            isModalVisible={this.state.isError}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra. Vui lòng nhấn quay lại và thử lại."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isError: false})}
           />
           <Formik
             initialValues={{email: ''}}

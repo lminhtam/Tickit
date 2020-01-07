@@ -13,6 +13,7 @@ import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
 import {SCREEN_WIDTH} from '../../shared/ultility.js';
 import firebase from 'firebase';
+import CustomModal from '../../shared/component/customModal';
 
 const list = [
   {
@@ -48,6 +49,7 @@ export default class ProfilePage extends React.Component {
       fullname: 'Chưa có tên',
       email: firebase.auth().currentUser.email,
       imgURL: firebase.auth().currentUser.photoURL,
+      isError: false,
     };
   }
 
@@ -72,7 +74,7 @@ export default class ProfilePage extends React.Component {
       await firebase.auth().signOut();
       this.props.navigation.navigate('Loading');
     } catch (e) {
-      console.log(e);
+      this.setState({isError: true});
     }
   };
 
@@ -103,6 +105,13 @@ export default class ProfilePage extends React.Component {
           <CustomHeader title="Trang cá nhân" isLeftBtnVisible={false} />
         </View>
         <ScrollView>
+          <CustomModal
+            isModalVisible={this.state.isError}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra. Vui lòng nhấn quay lại và thử lại."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isError: false})}
+          />
           <View style={styles.infoContainer}>
             {this.state.imgURL ? (
               <Image

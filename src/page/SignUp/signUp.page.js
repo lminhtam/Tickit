@@ -20,6 +20,7 @@ export default class SignUpPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isError: false,
       isHaveAccount: false,
       isNotHaveAccount:
         false || this.props.navigation.getParam('isNotHaveAccount'),
@@ -82,7 +83,7 @@ export default class SignUpPage extends React.Component {
             fullname: firebase.auth().currentUser.displayName,
             email: firebase.auth().currentUser.email,
           });
-        this.props.navigation.navigate('Profile');
+        this.props.navigation.navigate('ProfileStack');
       })
       .catch(error => {});
   };
@@ -116,7 +117,6 @@ export default class SignUpPage extends React.Component {
     LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       value => {
         if (value.isCancelled) {
-          console.log('Login cancelled');
         } else {
           AccessToken.getCurrentAccessToken().then(data => {
             const credential = firebase.auth.FacebookAuthProvider.credential(
@@ -157,17 +157,17 @@ export default class SignUpPage extends React.Component {
               fullname: firebase.auth().currentUser.displayName,
               email: firebase.auth().currentUser.email,
             });
-          this.props.navigation.navigate('Profile');
+          this.props.navigation.navigate('ProfileStack');
         });
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('Cancelled sign up');
+        // console.log('Cancelled sign up');
       } else if (error.code === statusCodes.IN_PROGRESS) {
         this.setState({isHaveAccount: true});
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('Play service is not available');
+        // console.log('Play service is not available');
       } else {
-        console.log('Unknown error');
+        this.setState({isError: true});
       }
     }
   };
@@ -188,6 +188,13 @@ export default class SignUpPage extends React.Component {
               this.setState({isHaveAccount: false});
               this.props.navigation.navigate('Login');
             }}
+          />
+          <CustomModal
+            isModalVisible={this.state.isError}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra. Vui lòng nhấn quay lại và thử lại."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isError: false})}
           />
           <CustomModal
             isModalVisible={this.state.isNotHaveAccount}

@@ -112,7 +112,7 @@ const ProfileSwitch = createSwitchNavigator(
     Loading: LoadingPage,
     Login: LoginStack,
     SignUp: SignUpPage,
-    Profile: ProfileStack,
+    ProfileStack: ProfileStack,
   },
   {
     headerMode: 'none',
@@ -129,20 +129,6 @@ const ProfileSwitch = createSwitchNavigator(
     initialRouteName: 'Loading',
   },
 );
-
-// const MapsStack = createStackNavigator(
-//   {
-//     MapsScreen,
-//   },
-//   {
-//     headerMode: 'none',
-//     navigationOptions: {
-//       tabBarIcon: ({ tintColor }) => (
-//         <Icon name="location-pin" type="entypo" size={20} color={tintColor} />
-//       ),
-//     },
-//   },
-// );
 
 const MainTabNavigator = createBottomTabNavigator(
   {

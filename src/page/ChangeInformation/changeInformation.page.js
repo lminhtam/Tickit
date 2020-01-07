@@ -20,8 +20,14 @@ export default class ChangeInformationPage extends React.Component {
       isEmailError: false,
       isError: false,
       isDone: false,
+      hasNotChanged: false,
     };
   }
+
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
 
   validationSchema = yup.object().shape({
     email: yup
@@ -57,7 +63,7 @@ export default class ChangeInformationPage extends React.Component {
             .catch(error => this.setState({isEmailError: true})),
         )
         .catch(error => this.setState({isError: true}));
-    }
+    } else this.setState({hasNotChanged: true});
   };
 
   inputs = {};
@@ -92,6 +98,13 @@ export default class ChangeInformationPage extends React.Component {
             onPressBtn={() => this.setState({isError: false})}
           />
           <CustomModal
+            isModalVisible={this.state.hasNotChanged}
+            isSuccess={false}
+            text="Bạn chưa đổi thông tin. Nhấn quay lại để thay đổi tiếp."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({hasNotChanged: false})}
+          />
+          <CustomModal
             isModalVisible={this.state.isDone}
             isSuccess={true}
             text="Đã đổi thông tin thành công."
@@ -104,7 +117,6 @@ export default class ChangeInformationPage extends React.Component {
           <Formik
             initialValues={{
               email: user.email,
-              password: '',
               fullname: user.displayName,
             }}
             validationSchema={this.validationSchema}
