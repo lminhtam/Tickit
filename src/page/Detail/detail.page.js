@@ -40,7 +40,9 @@ export default class DetailPage extends React.Component {
       isCanBuy: false,
     };
     this.onPressBack = () => {
-      this.props.navigation.navigate(this.state.used);
+      this.props.navigation.goBack();
+      // this.props.navigation.navigate(this.state.used);
+      return true;
     };
   }
 
@@ -257,7 +259,7 @@ export default class DetailPage extends React.Component {
         <CustomHeader
           title="Chi tiết"
           isLeftBtnVisible={true}
-          onPressBtnLeft={() => this.props.navigation.navigate(this.state.used)}
+          onPressBtnLeft={() => this.props.navigation.goBack()}
         />
         <ScrollView contentContainerStyle={styles.mainViewStyle}>
           <CustomModal

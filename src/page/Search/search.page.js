@@ -14,7 +14,9 @@ export default class SearchPage extends React.Component {
     super(props);
     this.state = {
       search: '',
+      sort: 0,
       show: [],
+      filterShow: [],
       isLoading: true,
       liked: [],
       isShowModal: false,
@@ -39,18 +41,17 @@ export default class SearchPage extends React.Component {
           else this.setState({liked: []});
         });
     } else this.setState({liked: []});
-    await this.setState({show: data, isLoading: false});
+    await this.setState({
+      show: data,
+    });
+    await this.setState({
+      filterShow: this.state.show.sort(this.sortShowByDate),
+      isLoading: false,
+    });
   };
 
   componentDidMount() {
     this.readUserData();
-    this._navListener = this.props.navigation.addListener('didFocus', () => {
-      this.readUserData();
-    });
-  }
-
-  componentWillUnmount() {
-    this._navListener.remove();
   }
 
   onPressLikeBtn = async index => {
@@ -82,18 +83,53 @@ export default class SearchPage extends React.Component {
     });
   };
 
+  sortShowByDate = (a, b) => {
+    let aDate = new Date(
+      Number(a.dateYear),
+      Number(a.dateMonth) - 1,
+      Number(a.dateNum),
+    );
+    let bDate = new Date(
+      Number(b.dateYear),
+      Number(b.dateMonth) - 1,
+      Number(b.dateNum),
+    );
+    return bDate.getTime() - aDate.getTime();
+  };
+
+  sortByRating = (a, b) => {
+    return a.rating.localeCompare(b.rating);
+  };
+
+  onSelect = data => {
+    if (this.state.sort === data) return;
+    this.setState({sort: data});
+    if (data === 0) {
+      this.setState({
+        filterShow: this.state.filterShow.sort(this.sortShowByDate),
+      });
+    } else if (data === 1) {
+      this.setState({
+        filterShow: this.state.filterShow.sort(this.sortByRating),
+      });
+    }
+  };
+
   renderItem = ({item}) => {
     const index = this.state.show.indexOf(item);
     return (
       <ShowItem
         item={item}
         liked={this.state.liked.indexOf(index) !== -1}
-        onPressItem={() =>
+        onPressItem={() => {
+          // console.log(item);
+          // console.log(index);
+          // console.log(this.state.show)
           this.props.navigation.navigate('Detail', {
             used: 'Search',
             index: index,
-          })
-        }
+          });
+        }}
         onPressLikeBtn={() => this.onPressLikeBtn(index)}
       />
     );
@@ -107,6 +143,12 @@ export default class SearchPage extends React.Component {
           onChangeText={text => this.SearchFilterFunction(text)}
           placeholder="Nhập tên sự kiện"
           value={this.state.search}
+          onPressFilter={() =>
+            this.props.navigation.navigate('Filter', {
+              onSelect: this.onSelect,
+              sort: this.state.sort,
+            })
+          }
         />
         <CustomModal
           isModalVisible={this.state.isShowModal}
@@ -120,11 +162,11 @@ export default class SearchPage extends React.Component {
         />
         {this.state.show && this.state.show.length > 0 ? (
           <FlatList
-            data={this.state.show.filter(this.filterShow)}
+            data={this.state.filterShow.filter(this.filterShow)}
             renderItem={this.renderItem}
             enableEmptySections={true}
             style={{marginTop: 10}}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={index => index.toString()}
           />
         ) : (
           <Text style={styles.notFound}>Không tìm thấy kết quả phù hợp.</Text>

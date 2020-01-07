@@ -97,7 +97,8 @@ export default class TicketDetailPage extends React.Component {
 
   onPressBack = () => {
     if (this.state.used === 'home') this.props.navigation.dispatch(popAction);
-    else this.props.navigation.goBack();
+    else this.props.navigation.goBack(null);
+    return true;
   };
 
   onPressCancel = async () => {

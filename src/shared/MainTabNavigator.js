@@ -22,24 +22,15 @@ import ChangeInformationPage from '../page/ChangeInformation/changeInformation.p
 import ChangeAvatarPage from '../page/ChangeAvatar/changeAvatar.page';
 import PaymentPage from '../page/Payment/payment.page';
 import LikedShowPage from '../page/LikedShow/likedShow.page';
+import FilterPage from '../page/Filter/filter.page';
 
-const BookingStack = createStackNavigator(
+const HomeSwitch = createStackNavigator(
   {
+    Home: HomePage,
     Detail: DetailPage,
     Booking: BookingPage,
     TicketInfo: TicketInformation,
     TicketDetail: TicketDetailPage,
-  },
-  {
-    headerMode: 'none',
-    initialRouteName: 'Detail',
-  },
-);
-
-const HomeSwitch = createSwitchNavigator(
-  {
-    Home: HomePage,
-    BookingStack: BookingStack,
   },
   {
     headerMode: 'none',
@@ -52,10 +43,14 @@ const HomeSwitch = createSwitchNavigator(
   },
 );
 
-const SearchSwitch = createSwitchNavigator(
+const SearchSwitch = createStackNavigator(
   {
     Search: SearchPage,
-    BookingStackSearch: BookingStack,
+    Filter: FilterPage,
+    Detail: DetailPage,
+    Booking: BookingPage,
+    TicketInfo: TicketInformation,
+    TicketDetail: TicketDetailPage,
   },
   {
     headerMode: 'none',
@@ -79,10 +74,13 @@ const LoginStack = createStackNavigator(
   },
 );
 
-const LikedShowSwitch = createSwitchNavigator(
+const LikedShowSwitch = createStackNavigator(
   {
     LikedShow: LikedShowPage,
-    BookingStackLiked: BookingStack,
+    Detail: DetailPage,
+    Booking: BookingPage,
+    TicketInfo: TicketInformation,
+    TicketDetail: TicketDetailPage,
   },
   {
     headerMode: 'none',

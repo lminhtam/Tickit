@@ -6,6 +6,7 @@ import {
   View,
   Image,
   FlatList,
+  BackHandler,
 } from 'react-native';
 import {Text, Button, Icon} from 'native-base';
 import Color from '../../shared/Color.js';
@@ -30,6 +31,18 @@ export default class TicketInformationPage extends React.Component {
       quantityTicket: [],
       confirm: false,
     };
+    this.onPressBack = () => {
+      this.props.navigation.goBack();
+      return true;
+    };
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
   }
 
   getItem = async () => {

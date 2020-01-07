@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
 import {Icon, SearchBar} from 'react-native-elements';
 import Color from '../../../shared/Color';
 
@@ -30,13 +30,15 @@ class SearchBarComponent extends React.Component {
           value={this.state.searchValue}
           inputStyle={styles.inputStyle}
         />
-        <Icon
-          name="filter"
-          type="Feather"
-          color="white"
-          size={24}
-          containerStyle={styles.headerIcon}
-        />
+        <TouchableWithoutFeedback onPress={this.props.onPressFilter}>
+          <Icon
+            name="filter"
+            type="feather"
+            color="white"
+            size={28}
+            containerStyle={styles.headerIcon}
+          />
+        </TouchableWithoutFeedback>
       </View>
     );
   }
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerIcon: {
-    marginHorizontal: 10,
+    marginRight: 12,
   },
   searchcontainer: {
     flex: 1,

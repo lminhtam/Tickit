@@ -1,6 +1,11 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View} from 'react-native';
-
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  BackHandler,
+} from 'react-native';
 import {Text, Button, Input, Form} from 'native-base';
 import Color from '../../shared/Color.js';
 import CustomHeader from '../../shared/component/customHeader';
@@ -16,6 +21,18 @@ export default class BookingPage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.onPressBack = () => {
+      this.props.navigation.goBack();
+      return true;
+    };
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
   }
 
   focusTheField = id => {

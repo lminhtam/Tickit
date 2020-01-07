@@ -24,7 +24,7 @@ export default class CustomHeader extends React.Component {
           {false || this.props.isLeftBtnVisible ? (
             <Button transparent onPress={this.props.onPressBtnLeft}>
               <Icon
-                name="keyboard-arrow-left"
+                name={this.props.leftIconName ? this.props.leftIconName : "keyboard-arrow-left"}
                 type="MaterialIcons"
                 style={{fontSize: 28}}
               />
