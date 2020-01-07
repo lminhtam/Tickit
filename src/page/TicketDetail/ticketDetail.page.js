@@ -1,5 +1,12 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View, Image} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Image,
+  BackHandler,
+} from 'react-native';
 import {Text, Button, Icon, Spinner} from 'native-base';
 import Color from '../../shared/Color.js';
 import QRCode from 'react-native-qrcode-svg';
@@ -31,6 +38,7 @@ export default class TicketDetailPage extends React.Component {
       confirm: false,
       loading: true,
     };
+    this.onPressBack = this.onPressBack.bind(this);
   }
 
   getItem = async () => {
@@ -74,6 +82,14 @@ export default class TicketDetailPage extends React.Component {
       )
       .catch(error => this.onPressBack());
   };
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
+  }
 
   componentDidMount() {
     this.getItem();

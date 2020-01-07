@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import {Text, Button, Icon, Spinner} from 'native-base';
 import Color from '../../shared/Color.js';
@@ -37,6 +38,9 @@ export default class DetailPage extends React.Component {
       cannotBuy: false,
       isShowModal: false,
       isCanBuy: false,
+    };
+    this.onPressBack = () => {
+      this.props.navigation.navigate(this.state.used);
     };
   }
 
@@ -94,6 +98,14 @@ export default class DetailPage extends React.Component {
   setQuantity = (item, index, arr) => {
     arr[index].quantity = 0;
   };
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
+  }
 
   componentDidMount() {
     this.getItem();

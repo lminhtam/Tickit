@@ -32,9 +32,9 @@ class SearchBarComponent extends React.Component {
         />
         <Icon
           name="filter"
-          type="feather"
+          type="Feather"
           color="white"
-          size={30}
+          size={24}
           containerStyle={styles.headerIcon}
         />
       </View>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerIcon: {
-    marginHorizontal: 5,
+    marginHorizontal: 10,
   },
   searchcontainer: {
     flex: 1,

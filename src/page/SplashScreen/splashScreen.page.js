@@ -6,7 +6,6 @@ import Color from '../../shared/Color';
 export default class SplashScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {isLoading: true};
   }
 
   async componentDidMount() {
