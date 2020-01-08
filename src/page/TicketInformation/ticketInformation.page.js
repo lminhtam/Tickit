@@ -15,6 +15,7 @@ import Ticket from '../../../firebaseConfig';
 import {formatCurrency, generateUID} from '../../shared/ultility';
 import firebase from 'firebase';
 import ConfirmModal from '../../shared/component/confirmModal';
+import CustomModal from '../../shared/component/customModal';
 
 export default class TicketInformationPage extends React.Component {
   static navigationOptions = {
@@ -30,6 +31,7 @@ export default class TicketInformationPage extends React.Component {
       user: this.props.navigation.getParam('user'),
       quantityTicket: [],
       confirm: false,
+      cannotBuy: false,
     };
     this.onPressBack = () => {
       this.props.navigation.goBack();
@@ -73,6 +75,24 @@ export default class TicketInformationPage extends React.Component {
   }
 
   onPressBookTickets = async () => {
+    let index = this.props.navigation.getParam('itemIndex');
+    let quantity = this.props.navigation.getParam('quantityTicket');
+    let ref = Ticket.database().ref('shows/' + index + '/ticket');
+    ref.transaction(async ticket => {
+      if (ticket) {
+        let tmp = ticket;
+        console.log(ticket);
+        for (let i = 0; i < tmp.length; i++) {
+          if (tmp[i].quantity <= 0 && quantity[i].quantity > 0) {
+            await this.setState({cannotBuy: true});
+            return ticket;
+          } else tmp[i].quantity -= quantity[i].quantity;
+        }
+        ticket = tmp;
+        return ticket;
+      }
+    });
+    if (this.state.cannotBuy) return;
     let today = new Date();
     let todayString =
       today.getDate() +
@@ -122,6 +142,13 @@ export default class TicketInformationPage extends React.Component {
             onPressCancelBtn={() => this.setState({confirm: false})}
             btnAgreeText="Thanh toán"
             onPressAgreeBtn={() => this.onPressBookTickets()}
+          />
+          <CustomModal
+            isModalVisible={this.state.cannotBuy}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra trong quá trình mua vé. Vé có thể đã hết hoặc bạn chưa chọn vé cần mua. Nhấn quay lại để trở về."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({cannotBuy: false})}
           />
           <View style={styles.ticketContainer}>
             <View>

@@ -52,7 +52,7 @@ export default class FilterPage extends React.Component {
           <CheckBox
             checked={this.state.activeSort === index}
             color={Color.primaryColor}
-            onPress={() => this.handlePressCheckBox()}
+            onPress={() => this.onPressSortItem(index)}
           />
           <Text style={styles.recomStyle}>{item.title}</Text>
         </View>

@@ -84,7 +84,7 @@ export default class HomePage extends React.Component {
           if (likedShow) this.setState({liked: likedShow});
           else this.setState({liked: []});
         });
-    } else this.setState({liked: []})
+    } else this.setState({liked: []});
     await this.setState({shows: data, isLoading: false});
   };
 
@@ -150,7 +150,6 @@ export default class HomePage extends React.Component {
         liked={this.state.liked.indexOf(index) !== -1}
         onPressItem={() => {
           this.props.navigation.navigate('Detail', {
-            used: 'Home',
             index: index,
           });
         }}
@@ -167,7 +166,6 @@ export default class HomePage extends React.Component {
         liked={this.state.liked.indexOf(index) !== -1}
         onPressItem={() => {
           this.props.navigation.navigate('Detail', {
-            used: 'Home',
             index: index,
           });
         }}

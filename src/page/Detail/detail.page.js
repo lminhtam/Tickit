@@ -27,7 +27,6 @@ export default class DetailPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      used: '',
       index: this.props.navigation.getParam('index'),
       item: {price: 0},
       liked: false,
@@ -41,13 +40,30 @@ export default class DetailPage extends React.Component {
     };
     this.onPressBack = () => {
       this.props.navigation.goBack();
-      // this.props.navigation.navigate(this.state.used);
       return true;
     };
   }
 
+  componentDidMount() {
+    this.getItem();
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        Ticket.database()
+          .ref()
+          .child(
+            'users/' + firebase.auth().currentUser.uid + '/likedShow/liked',
+          )
+          .once('value', snapshot => {
+            if (snapshot.exists()) {
+              let liked = snapshot.val().indexOf(index) !== -1;
+              this.setState({liked: liked});
+            }
+          });
+      }
+    });
+  }
+
   getItem = async () => {
-    let used = this.props.navigation.getParam('used');
     let index = this.props.navigation.getParam('index');
     let data = {};
     let description = {};
@@ -88,7 +104,6 @@ export default class DetailPage extends React.Component {
         });
     }
     await this.setState({
-      used: used,
       isLoading: false,
     });
   };
@@ -107,10 +122,6 @@ export default class DetailPage extends React.Component {
 
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
-  }
-
-  componentDidMount() {
-    this.getItem();
   }
 
   onPressMinusBtn = (quantity, index) => {
@@ -172,16 +183,14 @@ export default class DetailPage extends React.Component {
   };
 
   onPressBookBtn = () => {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        if (!this.state.quantityTicket.every(this.checkQuantity))
-          this.props.navigation.navigate('Booking', {
-            itemIndex: this.props.navigation.getParam('index'),
-            ticketQuantity: this.state.quantityTicket,
-          });
-        else this.setState({cannotBuy: true});
-      } else this.setState({isNotLogin: true});
-    });
+    if (firebase.auth().currentUser) {
+      if (!this.state.quantityTicket.every(this.checkQuantity))
+        this.props.navigation.navigate('Booking', {
+          itemIndex: this.props.navigation.getParam('index'),
+          ticketQuantity: this.state.quantityTicket,
+        });
+      else this.setState({cannotBuy: true});
+    } else this.setState({isNotLogin: true});
   };
 
   renderItem = ({item, index}) => (
@@ -269,7 +278,7 @@ export default class DetailPage extends React.Component {
             btnText="Đăng nhập"
             onPressBtn={() => {
               this.setState({isNotLogin: false});
-              this.props.navigation.navigate('Profile');
+              this.props.navigation.navigate('Login');
             }}
           />
           <CustomModal

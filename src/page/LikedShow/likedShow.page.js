@@ -71,7 +71,6 @@ export default class LikedShowPage extends React.Component {
         liked={true}
         onPressItem={() =>
           this.props.navigation.navigate('Detail', {
-            used: 'LikedShow',
             index: this.state.liked[index],
           })
         }

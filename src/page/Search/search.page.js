@@ -45,7 +45,7 @@ export default class SearchPage extends React.Component {
       show: data,
     });
     await this.setState({
-      filterShow: this.state.show.sort(this.sortShowByDate),
+      filterShow: data.sort(this.sortShowByDate),
       isLoading: false,
     });
   };
@@ -126,7 +126,6 @@ export default class SearchPage extends React.Component {
           // console.log(index);
           // console.log(this.state.show)
           this.props.navigation.navigate('Detail', {
-            used: 'Search',
             index: index,
           });
         }}
