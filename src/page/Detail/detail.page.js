@@ -55,11 +55,14 @@ export default class DetailPage extends React.Component {
           )
           .once('value', snapshot => {
             if (snapshot.exists()) {
-              let liked = snapshot.val().indexOf(index) !== -1;
+              let liked =
+                snapshot
+                  .val()
+                  .indexOf(this.props.navigation.getParam('index')) !== -1;
               this.setState({liked: liked});
             }
           });
-      }
+      } else this.setState({liked: false});
     });
   }
 
@@ -79,7 +82,6 @@ export default class DetailPage extends React.Component {
             Number(data.dateNum),
           ).getTime() > new Date().getTime();
         this.setState({isCanBuy: isCanBuy});
-        data.ticket.forEach(this.toNumber);
         let quantity = [];
         quantity = data.ticket.slice();
         quantity.forEach(this.setQuantity);
@@ -106,10 +108,6 @@ export default class DetailPage extends React.Component {
     await this.setState({
       isLoading: false,
     });
-  };
-
-  toNumber = (item, index, arr) => {
-    arr[index].quantity = Number(item.quantity);
   };
 
   setQuantity = (item, index, arr) => {
@@ -163,16 +161,22 @@ export default class DetailPage extends React.Component {
 
   onPressLikeBtn = async () => {
     let likedShow = [];
+    let index = this.props.navigation.getParam('index');
     if (firebase.auth().currentUser) {
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
         .once('value', snapshot => {
           likedShow = snapshot.val();
-          let pos = likedShow.indexOf(this.state.index);
-          if (pos !== -1) {
-            likedShow.splice(pos, 1);
-          } else likedShow.push(this.state.index);
+          if (likedShow) {
+            let pos = likedShow.indexOf(index);
+            if (pos !== -1) {
+              likedShow.splice(pos, 1);
+            } else likedShow.push(index);
+          } else {
+            likedShow = [];
+            likedShow.push(index);
+          }
           Ticket.database()
             .ref()
             .child('users/' + firebase.auth().currentUser.uid + '/likedShow')

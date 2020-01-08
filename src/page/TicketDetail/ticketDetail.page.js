@@ -102,6 +102,19 @@ export default class TicketDetailPage extends React.Component {
   };
 
   onPressCancel = async () => {
+    let ref = Ticket.database().ref(
+      'shows/' + this.state.ticket.showIndex + '/ticket',
+    );
+    await ref
+      .transaction(ticket => {
+        if (ticket) {
+          for (let i = 0; i < ticket.length; i++) {
+            ticket[i].quantity += this.state.ticket.quantityTicket[i].quantity;
+          }
+        }
+        return ticket;
+      })
+      .catch(error => this.setState({isError: true}));
     let ticketId = this.props.navigation.getParam('ticketId');
     await Ticket.database()
       .ref(

@@ -78,21 +78,24 @@ export default class TicketInformationPage extends React.Component {
     let index = this.props.navigation.getParam('itemIndex');
     let quantity = this.props.navigation.getParam('quantityTicket');
     let ref = Ticket.database().ref('shows/' + index + '/ticket');
-    ref.transaction(async ticket => {
-      if (ticket) {
-        let tmp = ticket;
-        console.log(ticket);
-        for (let i = 0; i < tmp.length; i++) {
-          if (tmp[i].quantity <= 0 && quantity[i].quantity > 0) {
-            await this.setState({cannotBuy: true});
-            return ticket;
-          } else tmp[i].quantity -= quantity[i].quantity;
+    let flag = true;
+    await ref
+      .transaction(ticket => {
+        if (ticket) {
+          let tmp = ticket;
+          for (let i = 0; i < tmp.length; i++) {
+            if (tmp[i].quantity <= 0 && quantity[i].quantity > 0) {
+              this.setState({cannotBuy: true});
+              flag = false;
+              break;
+            } else tmp[i].quantity -= quantity[i].quantity;
+          }
+          if (flag) ticket = tmp;
         }
-        ticket = tmp;
         return ticket;
-      }
-    });
-    if (this.state.cannotBuy) return;
+      })
+      .catch(error => console.log(error));
+    if (!flag) return;
     let today = new Date();
     let todayString =
       today.getDate() +
@@ -148,7 +151,9 @@ export default class TicketInformationPage extends React.Component {
             isSuccess={false}
             text="Đã có lỗi xảy ra trong quá trình mua vé. Vé có thể đã hết hoặc bạn chưa chọn vé cần mua. Nhấn quay lại để trở về."
             btnText="Quay lại"
-            onPressBtn={() => this.setState({cannotBuy: false})}
+            onPressBtn={() => {
+              this.setState({cannotBuy: false, confirm: false});
+            }}
           />
           <View style={styles.ticketContainer}>
             <View>
