@@ -5,6 +5,8 @@ import Color from '../../shared/Color';
 import firebase from 'firebase';
 import Ticket from '../../../firebaseConfig';
 
+var flag = true;
+
 export default class LoadingPage extends React.Component {
   static navigationOptions = {
     header: <View />,
@@ -18,14 +20,19 @@ export default class LoadingPage extends React.Component {
           .child('users')
           .once('value', snapshot => {
             if (snapshot.hasChild(firebase.auth().currentUser.uid)) {
-              this.props.navigation.navigate('Profile');
+              this.props.navigation.navigate('ProfileStack');
             } else {
-              this.props.navigation.navigate('SignUp', {
-                isNotHaveAccount: true,
-              });
+              flag = false;
+              firebase.auth().signOut();
             }
           });
-      } else this.props.navigation.navigate('Login');
+      } else {
+        if (flag) this.props.navigation.navigate('Login');
+        else {
+          flag = true;
+          this.props.navigation.navigate('SignUp', {isNotHaveAccount: true});
+        }
+      }
     });
   }
 

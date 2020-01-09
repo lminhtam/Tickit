@@ -6,6 +6,7 @@ import {
   View,
   Image,
   FlatList,
+  BackHandler,
 } from 'react-native';
 import {Text, Button, Icon} from 'native-base';
 import Color from '../../shared/Color.js';
@@ -13,6 +14,8 @@ import CustomHeader from '../../shared/component/customHeader';
 import Ticket from '../../../firebaseConfig';
 import {formatCurrency, generateUID} from '../../shared/ultility';
 import firebase from 'firebase';
+import ConfirmModal from '../../shared/component/confirmModal';
+import CustomModal from '../../shared/component/customModal';
 
 export default class TicketInformationPage extends React.Component {
   static navigationOptions = {
@@ -27,7 +30,21 @@ export default class TicketInformationPage extends React.Component {
       totalQuantity: 0,
       user: this.props.navigation.getParam('user'),
       quantityTicket: [],
+      confirm: false,
+      cannotBuy: false,
     };
+    this.onPressBack = () => {
+      this.props.navigation.goBack();
+      return true;
+    };
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
   }
 
   getItem = async () => {
@@ -58,6 +75,27 @@ export default class TicketInformationPage extends React.Component {
   }
 
   onPressBookTickets = async () => {
+    let index = this.props.navigation.getParam('itemIndex');
+    let quantity = this.props.navigation.getParam('quantityTicket');
+    let ref = Ticket.database().ref('shows/' + index + '/ticket');
+    let flag = true;
+    await ref
+      .transaction(ticket => {
+        if (ticket) {
+          let tmp = ticket;
+          for (let i = 0; i < tmp.length; i++) {
+            if (tmp[i].quantity <= 0 && quantity[i].quantity > 0) {
+              this.setState({cannotBuy: true});
+              flag = false;
+              break;
+            } else tmp[i].quantity -= quantity[i].quantity;
+          }
+          if (flag) ticket = tmp;
+        }
+        return ticket;
+      })
+      .catch(error => console.log(error));
+    if (!flag) return;
     let today = new Date();
     let todayString =
       today.getDate() +
@@ -82,12 +120,13 @@ export default class TicketInformationPage extends React.Component {
         phoneNumber: this.state.user.phoneNumber,
         personalID: this.state.user.id,
       })
-      .then(() =>
+      .then(() => {
+        this.setState({confirm: false});
         this.props.navigation.navigate('TicketDetail', {
           ticketId: id,
           used: 'home',
-        }),
-      );
+        });
+      });
   };
 
   render() {
@@ -99,6 +138,23 @@ export default class TicketInformationPage extends React.Component {
           onPressBtnLeft={() => this.props.navigation.goBack()}
         />
         <ScrollView style={{backgroundColor: '#AC73E480'}}>
+          <ConfirmModal
+            isModalVisible={this.state.confirm}
+            text="Xác nhận thanh toán?"
+            btnCancelText="Quay lại"
+            onPressCancelBtn={() => this.setState({confirm: false})}
+            btnAgreeText="Thanh toán"
+            onPressAgreeBtn={() => this.onPressBookTickets()}
+          />
+          <CustomModal
+            isModalVisible={this.state.cannotBuy}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra trong quá trình mua vé. Vé có thể đã hết hoặc bạn chưa chọn vé cần mua. Nhấn quay lại để trở về."
+            btnText="Quay lại"
+            onPressBtn={() => {
+              this.setState({cannotBuy: false, confirm: false});
+            }}
+          />
           <View style={styles.ticketContainer}>
             <View>
               <Image
@@ -169,7 +225,7 @@ export default class TicketInformationPage extends React.Component {
             rounded
             block
             style={styles.bookBtn}
-            onPress={() => this.onPressBookTickets()}>
+            onPress={() => this.setState({confirm: true})}>
             <Text style={styles.bookText} uppercase={false}>
               Thanh toán
             </Text>

@@ -1,6 +1,13 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, ScrollView, View, Image} from 'react-native';
-import {Text, Button, Icon} from 'native-base';
+import {
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Image,
+  BackHandler,
+} from 'react-native';
+import {Text, Button, Icon, Spinner} from 'native-base';
 import Color from '../../shared/Color.js';
 import QRCode from 'react-native-qrcode-svg';
 import CustomHeader from '../../shared/component/customHeader';
@@ -8,6 +15,7 @@ import {StackActions} from 'react-navigation';
 import Ticket from '../../../firebaseConfig';
 import firebase from 'firebase';
 import CustomModal from '../../shared/component/customModal';
+import ConfirmModal from '../../shared/component/confirmModal';
 
 const popAction = StackActions.pop({
   n: 3,
@@ -27,7 +35,10 @@ export default class TicketDetailPage extends React.Component {
       ticket: {},
       canCancel: true,
       isError: false,
+      confirm: false,
+      loading: true,
     };
+    this.onPressBack = this.onPressBack.bind(this);
   }
 
   getItem = async () => {
@@ -66,11 +77,19 @@ export default class TicketDetailPage extends React.Component {
               Number(show.dateNum) - 1,
             );
             let canCancel = showDay.getTime() > new Date().getTime();
-            this.setState({canCancel: canCancel});
+            this.setState({canCancel: canCancel, loading: false});
           }),
       )
       .catch(error => this.onPressBack());
   };
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
+  }
 
   componentDidMount() {
     this.getItem();
@@ -78,10 +97,24 @@ export default class TicketDetailPage extends React.Component {
 
   onPressBack = () => {
     if (this.state.used === 'home') this.props.navigation.dispatch(popAction);
-    else this.props.navigation.goBack();
+    else this.props.navigation.goBack(null);
+    return true;
   };
 
   onPressCancel = async () => {
+    let ref = Ticket.database().ref(
+      'shows/' + this.state.ticket.showIndex + '/ticket',
+    );
+    await ref
+      .transaction(ticket => {
+        if (ticket) {
+          for (let i = 0; i < ticket.length; i++) {
+            ticket[i].quantity += this.state.ticket.quantityTicket[i].quantity;
+          }
+        }
+        return ticket;
+      })
+      .catch(error => this.setState({isError: true}));
     let ticketId = this.props.navigation.getParam('ticketId');
     await Ticket.database()
       .ref(
@@ -90,11 +123,15 @@ export default class TicketDetailPage extends React.Component {
           '/bookedTickets/' +
           ticketId,
       )
-      .remove(() => this.onPressBack())
+      .remove(() => {
+        this.setState({confirm: false});
+        this.onPressBack();
+      })
       .catch(error => this.setState({isError: true}));
   };
 
   render() {
+    if (this.state.loading) return <Spinner color={Color.primaryColor} />;
     return (
       <SafeAreaView style={styles.container}>
         <CustomHeader
@@ -109,6 +146,14 @@ export default class TicketDetailPage extends React.Component {
             text="Đã có lỗi xảy ra. Vui lòng thử lại vào lúc khác"
             btnText="Quay lại"
             onPressBtn={() => this.setState({isError: false})}
+          />
+          <ConfirmModal
+            isModalVisible={this.state.confirm}
+            text="Xác nhận hủy vé?"
+            btnCancelText="Quay lại"
+            onPressCancelBtn={() => this.setState({confirm: false})}
+            btnAgreeText="Hủy vé"
+            onPressAgreeBtn={() => this.onPressCancel()}
           />
           <View style={styles.ticketContainer}>
             <View>
@@ -144,7 +189,7 @@ export default class TicketDetailPage extends React.Component {
             rounded
             block
             disabled={!this.state.canCancel}
-            onPress={() => this.onPressCancel()}
+            onPress={() => this.setState({confirm: true})}
             style={[
               styles.bookBtn,
               {

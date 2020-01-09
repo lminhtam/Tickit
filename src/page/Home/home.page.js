@@ -84,20 +84,28 @@ export default class HomePage extends React.Component {
           if (likedShow) this.setState({liked: likedShow});
           else this.setState({liked: []});
         });
-    } else this.setState({liked: []})
+    } else this.setState({liked: []});
     await this.setState({shows: data, isLoading: false});
   };
 
   componentDidMount() {
     this.readUserData();
-    // this._navListener = this.props.navigation.addListener('didFocus', () => {
-    //   this.readUserData();
-    // });
+    let likedShow = [];
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        Ticket.database()
+          .ref()
+          .child(
+            'users/' + firebase.auth().currentUser.uid + '/likedShow/liked',
+          )
+          .once('value', snapshot => {
+            likedShow = snapshot.val();
+            if (likedShow) this.setState({liked: likedShow});
+            else this.setState({liked: []});
+          });
+      } else this.setState({liked: []});
+    });
   }
-
-  // componentWillUnmount() {
-  //   this._navListener.remove();
-  // }
 
   onPressCategory = index => {
     let category = this.state.category;
@@ -118,7 +126,6 @@ export default class HomePage extends React.Component {
         likedShow.splice(pos, 1);
       } else likedShow.push(index);
       await this.setState({liked: likedShow});
-
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
@@ -143,35 +150,31 @@ export default class HomePage extends React.Component {
   );
 
   renderItem = ({item}) => {
-    const index = this.state.shows.indexOf(item);
     return (
       <ShowItem
         item={item}
-        liked={this.state.liked.indexOf(index) !== -1}
+        liked={this.state.liked.indexOf(item.id) !== -1}
         onPressItem={() => {
           this.props.navigation.navigate('Detail', {
-            used: 'Home',
-            index: index,
+            index: item.id,
           });
         }}
-        onPressLikeBtn={() => this.onPressLikeBtn(index)}
+        onPressLikeBtn={() => this.onPressLikeBtn(item.id)}
       />
     );
   };
 
   renderRecommendItem = ({item}) => {
-    const index = this.state.shows.indexOf(item);
     return (
       <ShowRecommendItem
         item={item}
-        liked={this.state.liked.indexOf(index) !== -1}
+        liked={this.state.liked.indexOf(item.id) !== -1}
         onPressItem={() => {
           this.props.navigation.navigate('Detail', {
-            used: 'Home',
-            index: index,
+            index: item.id,
           });
         }}
-        onPressLikeBtn={() => this.onPressLikeBtn(index)}
+        onPressLikeBtn={() => this.onPressLikeBtn(item.id)}
       />
     );
   };

@@ -48,20 +48,16 @@ export default class LikedShowPage extends React.Component {
   }
 
   onPressLikeBtn = async index => {
-    console.log(this.state.show);
-    console.log(index);
     let likedShow = this.state.liked;
     let pos = likedShow.indexOf(index);
-    console.log(pos);
     if (pos !== -1) {
       likedShow.splice(pos, 1);
     } else likedShow.push(index);
-    console.log(likedShow);
     await Ticket.database()
       .ref()
       .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
       .set({liked: likedShow})
-      .then(() => this.setState({liked: likedShow}));
+      .catch(error => console.log(error));
   };
 
   renderItem = ({item, index}) => {
@@ -71,11 +67,10 @@ export default class LikedShowPage extends React.Component {
         liked={true}
         onPressItem={() =>
           this.props.navigation.navigate('Detail', {
-            used: 'LikedShow',
-            index: this.state.liked[index],
+            index: item.id,
           })
         }
-        onPressLikeBtn={() => this.onPressLikeBtn(this.state.liked[index])}
+        onPressLikeBtn={() => this.onPressLikeBtn(item.id)}
       />
     );
   };

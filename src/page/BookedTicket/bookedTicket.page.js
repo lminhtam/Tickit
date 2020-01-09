@@ -8,52 +8,6 @@ import {SCREEN_WIDTH} from '../../shared/ultility';
 import Ticket from '../../../firebaseConfig';
 import firebase from 'firebase';
 import {formatCurrency} from '../../shared/ultility';
-import {ThemeProvider} from 'react-native-elements';
-
-const data = [
-  {
-    no: '1947034',
-    name: 'MUSIC SHOW',
-    totalPrice: '112$',
-    amount: 2,
-    date: '05-12-2019',
-  },
-  {
-    no: '1947034',
-    name: 'MUSIC SHOW',
-    totalPrice: '112$',
-    amount: 2,
-    date: '05-12-2019',
-  },
-  {
-    no: '1947034',
-    name: 'MUSIC SHOW',
-    totalPrice: '112$',
-    amount: 2,
-    date: '05-12-2019',
-  },
-  {
-    no: '1947034',
-    name: 'MUSIC SHOW',
-    totalPrice: '112$',
-    amount: 2,
-    date: '05-12-2019',
-  },
-  {
-    no: '1947034',
-    name: 'MUSIC SHOW',
-    totalPrice: '112$',
-    amount: 2,
-    date: '05-12-2019',
-  },
-  {
-    no: '1947034',
-    name: 'MUSIC SHOW',
-    totalPrice: '112$',
-    amount: 2,
-    date: '05-12-2019',
-  },
-];
 
 export default class BookedTicketPage extends React.Component {
   static navigationOptions = {

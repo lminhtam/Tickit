@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import {Text, Button, Icon, Spinner} from 'native-base';
 import Color from '../../shared/Color.js';
@@ -26,9 +27,8 @@ export default class DetailPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      used: '',
       index: this.props.navigation.getParam('index'),
-      item: {},
+      item: {price: 0},
       liked: false,
       quantityTicket: [],
       description: '',
@@ -38,10 +38,35 @@ export default class DetailPage extends React.Component {
       isShowModal: false,
       isCanBuy: false,
     };
+    this.onPressBack = () => {
+      this.props.navigation.goBack();
+      return true;
+    };
+  }
+
+  componentDidMount() {
+    this.getItem();
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        Ticket.database()
+          .ref()
+          .child(
+            'users/' + firebase.auth().currentUser.uid + '/likedShow/liked',
+          )
+          .once('value', snapshot => {
+            if (snapshot.exists()) {
+              let liked =
+                snapshot
+                  .val()
+                  .indexOf(this.props.navigation.getParam('index')) !== -1;
+              this.setState({liked: liked});
+            }
+          });
+      } else this.setState({liked: false});
+    });
   }
 
   getItem = async () => {
-    let used = this.props.navigation.getParam('used');
     let index = this.props.navigation.getParam('index');
     let data = {};
     let description = {};
@@ -57,7 +82,6 @@ export default class DetailPage extends React.Component {
             Number(data.dateNum),
           ).getTime() > new Date().getTime();
         this.setState({isCanBuy: isCanBuy});
-        data.ticket.forEach(this.toNumber);
         let quantity = [];
         quantity = data.ticket.slice();
         quantity.forEach(this.setQuantity);
@@ -74,29 +98,28 @@ export default class DetailPage extends React.Component {
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
-        .on('value', snapshot => {
+        .once('value', snapshot => {
           if (snapshot.exists()) {
-            let liked = snapshot.val().indexOf(index) !== -1
+            let liked = snapshot.val().indexOf(index) !== -1;
             this.setState({liked: liked});
-          }            
+          }
         });
     }
     await this.setState({
-      used: used,
       isLoading: false,
     });
-  };
-
-  toNumber = (item, index, arr) => {
-    arr[index].quantity = Number(item.quantity);
   };
 
   setQuantity = (item, index, arr) => {
     arr[index].quantity = 0;
   };
 
-  componentDidMount() {
-    this.getItem();
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.onPressBack);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.onPressBack);
   }
 
   onPressMinusBtn = (quantity, index) => {
@@ -138,16 +161,22 @@ export default class DetailPage extends React.Component {
 
   onPressLikeBtn = async () => {
     let likedShow = [];
+    let index = this.props.navigation.getParam('index');
     if (firebase.auth().currentUser) {
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
         .once('value', snapshot => {
           likedShow = snapshot.val();
-          let pos = likedShow.indexOf(this.state.index);
-          if (pos !== -1) {
-            likedShow.splice(pos, 1);
-          } else likedShow.push(this.state.index);
+          if (likedShow) {
+            let pos = likedShow.indexOf(index);
+            if (pos !== -1) {
+              likedShow.splice(pos, 1);
+            } else likedShow.push(index);
+          } else {
+            likedShow = [];
+            likedShow.push(index);
+          }
           Ticket.database()
             .ref()
             .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
@@ -158,16 +187,14 @@ export default class DetailPage extends React.Component {
   };
 
   onPressBookBtn = () => {
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        if (!this.state.quantityTicket.every(this.checkQuantity))
-          this.props.navigation.navigate('Booking', {
-            itemIndex: this.props.navigation.getParam('index'),
-            ticketQuantity: this.state.quantityTicket,
-          });
-        else this.setState({cannotBuy: true});
-      } else this.setState({isNotLogin: true});
-    });
+    if (firebase.auth().currentUser) {
+      if (!this.state.quantityTicket.every(this.checkQuantity))
+        this.props.navigation.navigate('Booking', {
+          itemIndex: this.props.navigation.getParam('index'),
+          ticketQuantity: this.state.quantityTicket,
+        });
+      else this.setState({cannotBuy: true});
+    } else this.setState({isNotLogin: true});
   };
 
   renderItem = ({item, index}) => (
@@ -245,7 +272,7 @@ export default class DetailPage extends React.Component {
         <CustomHeader
           title="Chi tiết"
           isLeftBtnVisible={true}
-          onPressBtnLeft={() => this.props.navigation.navigate(this.state.used)}
+          onPressBtnLeft={() => this.props.navigation.goBack()}
         />
         <ScrollView contentContainerStyle={styles.mainViewStyle}>
           <CustomModal
@@ -255,7 +282,7 @@ export default class DetailPage extends React.Component {
             btnText="Đăng nhập"
             onPressBtn={() => {
               this.setState({isNotLogin: false});
-              this.props.navigation.navigate('Profile');
+              this.props.navigation.navigate('Login');
             }}
           />
           <CustomModal
@@ -309,11 +336,7 @@ export default class DetailPage extends React.Component {
                     style={styles.likeBtn}
                     onPress={() => this.onPressLikeBtn()}>
                     <Icon
-                      name={
-                        false || this.props.liked
-                          ? 'ios-heart'
-                          : 'ios-heart-empty'
-                      }
+                      name={this.state.liked ? 'ios-heart' : 'ios-heart-empty'}
                       type="Ionicons"
                       style={styles.icon}
                     />

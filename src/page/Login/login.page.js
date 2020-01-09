@@ -24,6 +24,7 @@ export default class LoginPage extends React.Component {
       isWrongPassword: false,
       isNotHaveAccount: false,
       isHaveAccount: false,
+      isError: false,
     };
   }
 
@@ -39,6 +40,11 @@ export default class LoginPage extends React.Component {
       accountName: '',
     });
   }
+
+  focusTheField = id => {
+    this.inputs[id]._root.focus();
+  };
+  inputs = {};
 
   validationSchema = yup.object().shape({
     email: yup
@@ -58,7 +64,6 @@ export default class LoginPage extends React.Component {
     LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       value => {
         if (value.isCancelled) {
-          console.log('Login cancelled');
         } else {
           AccessToken.getCurrentAccessToken().then(data => {
             const credential = firebase.auth.FacebookAuthProvider.credential(
@@ -84,7 +89,7 @@ export default class LoginPage extends React.Component {
     firebase
       .auth()
       .signInWithEmailAndPassword(values.email, values.password)
-      .then(() => this.props.navigation.navigate('Profile'))
+      .then(() => this.props.navigation.navigate('ProfileStack'))
       .catch(error => {
         if (error.code === 'auth/user-not-found')
           this.setState({isNotHaveAccount: true});
@@ -106,13 +111,12 @@ export default class LoginPage extends React.Component {
         .then(() => {});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('Cancelled sign up');
       } else if (error.code === statusCodes.IN_PROGRESS) {
         this.setState({isHaveAccount: true});
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('Play service is not available');
+        // console.log('Play service is not available');
       } else {
-        console.log('Unknown error');
+        this.setState({isError: true});
       }
     }
   };
@@ -134,11 +138,22 @@ export default class LoginPage extends React.Component {
             }}
           />
           <CustomModal
+            isModalVisible={this.state.isError}
+            isSuccess={false}
+            text="Đã có lỗi xảy ra. Vui lòng nhấn quay lại và thử lại."
+            btnText="Quay lại"
+            onPressBtn={() => this.setState({isError: false})}
+          />
+          <CustomModal
             isModalVisible={this.state.isNotHaveAccount}
             isSuccess={false}
             text="Bạn chưa có tài khoản. Vui lòng nhấn nút đăng ký."
             btnText="Đăng ký"
-            onPressBtn={() => this.props.navigation.navigate('SignUp')}
+            onPressBtn={() =>
+              this.props.navigation.navigate('SignUp', {
+                isNotHaveAccount: false,
+              })
+            }
           />
           <CustomModal
             isModalVisible={this.state.isWrongPassword}
@@ -174,6 +189,11 @@ export default class LoginPage extends React.Component {
                           onChangeText={handleChange('email')}
                           onBlur={handleBlur('email')}
                           value={values.email}
+                          blurOnSubmit={false}
+                          returnKeyType={'next'}
+                          onSubmitEditing={() => {
+                            this.focusTheField('password');
+                          }}
                         />
                       </Item>
                       {touched.email && errors.email && (
@@ -189,6 +209,9 @@ export default class LoginPage extends React.Component {
                           onChangeText={handleChange('password')}
                           onBlur={handleBlur('password')}
                           value={values.password}
+                          getRef={input => {
+                            this.inputs['password'] = input;
+                          }}
                         />
                       </Item>
                       {touched.password && errors.password && (

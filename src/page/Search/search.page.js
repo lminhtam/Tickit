@@ -9,12 +9,16 @@ import Ticket from '../../../firebaseConfig';
 import CustomModal from '../../shared/component/customModal';
 import firebase from 'firebase';
 
+const now = new Date();
+
 export default class SearchPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       search: '',
-      show: [],
+      sort: 0,
+      shows: [],
+      filterShow: [],
       isLoading: true,
       liked: [],
       isShowModal: false,
@@ -23,34 +27,49 @@ export default class SearchPage extends React.Component {
 
   readUserData = async () => {
     let data = [];
+    let likedShow = [];
     await Ticket.database()
       .ref()
       .child('shows')
       .once('value', snapshot => {
         data = snapshot.val();
+        data = data.filter(this.filterPassShow);
+        data.sort(this.sortShowByDate);
       });
     if (firebase.auth().currentUser) {
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow/liked')
-        .once('value', snapshot => {
+        .on('value', snapshot => {
           likedShow = snapshot.val();
           if (likedShow) this.setState({liked: likedShow});
           else this.setState({liked: []});
         });
     } else this.setState({liked: []});
-    await this.setState({show: data, isLoading: false});
+    await this.setState({
+      shows: data,
+      filterShow: data,
+      isLoading: false,
+    });
   };
 
   componentDidMount() {
     this.readUserData();
-    this._navListener = this.props.navigation.addListener('didFocus', () => {
-      this.readUserData();
+    let likedShow = [];
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        Ticket.database()
+          .ref()
+          .child(
+            'users/' + firebase.auth().currentUser.uid + '/likedShow/liked',
+          )
+          .once('value', snapshot => {
+            likedShow = snapshot.val();
+            if (likedShow) this.setState({liked: likedShow});
+            else this.setState({liked: []});
+          });
+      } else this.setState({liked: []});
     });
-  }
-
-  componentWillUnmount() {
-    this._navListener.remove();
   }
 
   onPressLikeBtn = async index => {
@@ -61,7 +80,6 @@ export default class SearchPage extends React.Component {
         likedShow.splice(pos, 1);
       } else likedShow.push(index);
       await this.setState({liked: likedShow});
-
       await Ticket.database()
         .ref()
         .child('users/' + firebase.auth().currentUser.uid + '/likedShow')
@@ -76,25 +94,59 @@ export default class SearchPage extends React.Component {
     );
   };
 
+  filterPassShow = item => {
+    let aDate = new Date(
+      Number(item.dateYear),
+      Number(item.dateMonth) - 1,
+      Number(item.dateNum),
+    );
+    return aDate.getTime() > now.getTime();
+  };
+
   SearchFilterFunction = async text => {
-    await this.setState({
-      search: text,
-    });
+    await this.setState({search: text});
+    this.setState({filterShow: this.state.shows.filter(this.filterShow)});
+  };
+
+  sortShowByDate = (a, b) => {
+    let aDate = new Date(
+      Number(a.dateYear),
+      Number(a.dateMonth) - 1,
+      Number(a.dateNum),
+    );
+    let bDate = new Date(
+      Number(b.dateYear),
+      Number(b.dateMonth) - 1,
+      Number(b.dateNum),
+    );
+    return aDate.getTime() - bDate.getTime();
+  };
+
+  sortByRating = (a, b) => {
+    return b.rating.localeCompare(a.rating);
+  };
+
+  onSelect = data => {
+    if (this.state.sort === data) return;
+    this.setState({sort: data});
+    if (data === 0) {
+      this.setState({filterShow: this.state.shows.sort(this.sortShowByDate)});
+    } else if (data === 1) {
+      this.setState({filterShow: this.state.shows.sort(this.sortByRating)});
+    }
   };
 
   renderItem = ({item}) => {
-    const index = this.state.show.indexOf(item);
     return (
       <ShowItem
         item={item}
-        liked={this.state.liked.indexOf(index) !== -1}
-        onPressItem={() =>
+        liked={this.state.liked.indexOf(item.id) !== -1}
+        onPressItem={() => {
           this.props.navigation.navigate('Detail', {
-            used: 'Search',
-            index: index,
-          })
-        }
-        onPressLikeBtn={() => this.onPressLikeBtn(index)}
+            index: item.id,
+          });
+        }}
+        onPressLikeBtn={() => this.onPressLikeBtn(item.id)}
       />
     );
   };
@@ -107,6 +159,12 @@ export default class SearchPage extends React.Component {
           onChangeText={text => this.SearchFilterFunction(text)}
           placeholder="Nhập tên sự kiện"
           value={this.state.search}
+          onPressFilter={() =>
+            this.props.navigation.navigate('Filter', {
+              onSelect: this.onSelect,
+              sort: this.state.sort,
+            })
+          }
         />
         <CustomModal
           isModalVisible={this.state.isShowModal}
@@ -118,13 +176,13 @@ export default class SearchPage extends React.Component {
             this.props.navigation.navigate('Login');
           }}
         />
-        {this.state.show && this.state.show.length > 0 ? (
+        {this.state.filterShow && this.state.filterShow.length > 0 ? (
           <FlatList
-            data={this.state.show.filter(this.filterShow)}
+            data={this.state.filterShow}
             renderItem={this.renderItem}
             enableEmptySections={true}
             style={{marginTop: 10}}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={index => index.toString()}
           />
         ) : (
           <Text style={styles.notFound}>Không tìm thấy kết quả phù hợp.</Text>
