@@ -11,6 +11,7 @@ import firebase from 'firebase';
 import CustomModal from '../../shared/component/customModal';
 import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import {GoogleSignin, statusCodes} from 'react-native-google-signin';
+import Ticket from '../../../firebaseConfig';
 
 export default class SignUpPage extends React.Component {
   static navigationOptions = {
@@ -83,6 +84,7 @@ export default class SignUpPage extends React.Component {
             fullname: firebase.auth().currentUser.displayName,
             email: firebase.auth().currentUser.email,
           });
+        console.log('chay');
         this.props.navigation.navigate('ProfileStack');
       })
       .catch(error => {});
