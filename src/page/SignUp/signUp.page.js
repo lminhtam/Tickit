@@ -101,18 +101,6 @@ export default class SignUpPage extends React.Component {
       });
   };
 
-  initUser = token => {
-    fetch(
-      'https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' +
-        token,
-    )
-      .then(response => response.json())
-      .then(json => this.setDatabase(json.name))
-      .catch(() => {
-        reject('ERROR GETTING DATA FROM FACEBOOK');
-      });
-  };
-
   handleFacebookLogin = () => {
     LoginManager.logInWithPermissions(['public_profile', 'email']).then(
       value => {
@@ -125,7 +113,16 @@ export default class SignUpPage extends React.Component {
             firebase
               .auth()
               .signInWithCredential(credential)
-              .then(() => this.initUser(data.accessToken))
+              .then(() => {
+                firebase
+                  .database()
+                  .ref('users/' + firebase.auth().currentUser.uid + '/profile')
+                  .set({
+                    fullname: firebase.auth().currentUser.displayName,
+                    email: firebase.auth().currentUser.email,
+                  });
+                this.props.navigation.navigate('ProfileStack');
+              })
               .catch(error => {
                 if (
                   error.code === 'auth/account-exists-with-different-credential'
