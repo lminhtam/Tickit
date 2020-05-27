@@ -88,7 +88,7 @@ export default class ChangeAvatarPage extends React.Component {
     ImagePicker.showImagePicker(options, response => {
       if (response.didCancel) {
       } else if (response.error) {
-        tthis.setState({isError: true});
+        this.setState({isError: true});
       } else {
         this.setState({imgURL: response.uri, imgName: response.fileName});
       }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {View, StyleSheet, Modal} from 'react-native';
+import {View, StyleSheet, Modal, Alert} from 'react-native';
 import Color from '../Color';
 import {Button, Text} from 'native-base';
 import {SCREEN_WIDTH} from '../ultility';

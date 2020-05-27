@@ -139,7 +139,7 @@ export default class HomePage extends React.Component {
         style={[
           styles.segmentBtn,
           {
-            backgroundColor: item.status ? Color.inactiveColor : null,
+            backgroundColor: item.status ? 'rgba(255,255,255,0.3)' : null,
           },
         ]}>
         <Text uppercase={false} style={styles.segmentText}>
@@ -233,7 +233,7 @@ export default class HomePage extends React.Component {
                   }}
                   autoplay
                   loop
-                  autoplayInterval={2000}
+                  autoplayInterval={3000}
                   data={sortData}
                   renderItem={this.renderRecommendItem}
                   layout={'stack'}
